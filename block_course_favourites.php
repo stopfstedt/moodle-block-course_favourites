@@ -22,7 +22,8 @@ class block_course_favourites extends block_base {
             $accessinfo = get_user_access_sitewide($USER->id);
         }
 
-        $courses = get_user_courses_bycap($USER->id, 'gradereport/user:view', $accessinfo, false);
+        $courses = get_user_courses_bycap($USER->id, 'gradereport/user:view', $accessinfo, false,
+                                          'c.sortorder ASC', array('visible'));
 
 print_object($courses);
 
@@ -46,15 +47,23 @@ print_object($courses);
                     if (record_exists('block_course_favourites_selection', 'cfid', $id)) {
 
                         $noselection = false;
+
+                        // Print list of coruses work done here.....
+
                         $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?'.
                                   'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
                                   get_string('settings', 'block_course_favourites') . '</a>';
+
                     }
                 }
 
                 // print intro/help message if no selection has been created by the user
                 if ($noselection) {
                     $text = get_string('nocoursesforyou', 'block_course_favourites');
+
+                    $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?'.
+                              'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
+                              get_string('settings', 'block_course_favourites') . '</a>';
                 }
             }
         }

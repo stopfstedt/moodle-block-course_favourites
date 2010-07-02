@@ -23,6 +23,29 @@
 
     print_header_simple(get_string('header', 'block_course_recent'), '', $navigation);
 
+    // Check if this use has configured this block instance before
+    $crsfav = get_user_fav_courses($blockid, $USER->id);
+
+    // Check for capability for hidden courses
+    $showhidden = false;
+    $context = get_context_instance(CONTEXT_SYSTEM);
+    if (has_capability('moodle/course:viewhiddencourses', $context, $USER->id)) {
+        $showhidden = true;
+    }
+
+    // Check if AJAX is enabled
+//    if ($CFG->ajaxcapable) {
+//    }
+
+    // Get a list of all courses
+    if ($showhidden) {
+        $courses = get_records('course');
+    } else {
+        $courses = get_records('course', 'visible', 1);
+    }
+
+    //
+
 // something
 
     print_footer();

@@ -6,56 +6,87 @@
  */
 function get_user_fav_courses($blockinstance, $userid) {
 
-    $crsfav = array();
+    $crsfav     = array();
+    $courses    = array();
+    $coursesori = array();
 
-    if (($id = get_field('block_course_favourites', 'id', 'blockid', $blockinstance, 'userid', $userid))) {
-        $crsfav = get_records('block_course_favourites_selection', 'cfid', $id, 'parent ASC');
-    }
+    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
 
-    // Go through the favorites and remove courses that no longer exist
+    // Explode course list into an array
     if (!empty($crsfav)) {
+        $coursesori = explode(',', $crsfav->sequence);
 
-        // Get the first record in the list
-        $rec = each($crsfav);
-        $delkey = false;
+    } else {
+        return array();
+    }
 
-        // Doing the DO!
-        do {
+    // Determine which courses have been deleted
+    $courses = remove_deleted_courses($coursesori, $userid);
 
-            // Check if delkey is set.  If set then we must delete that record from the
-            // user's favourites list and re-order the favourites list
-            if ($delkey) {
-            }
-            // Check if the current record exists in the course table
-            if (!record_exists('course', 'id', $rec->courseid)) {
+    // Remove coures if the user doesn't have the proper role(s) for
+    // Non-cached - get accessinfo
+    $accessinfo = get_user_access_sitewide($userid);
 
-                // Save key of record that doesn't exist
-                $delkey = key($crsfav);
+    // Get courses the user is allowed to see
+    $capcourses = get_user_courses_bycap($userid, 'gradereport/user:view', $accessinfo, false,
+                                      'c.sortorder ASC', array('visible', 'fullname'));
+
+    // Remove courses the user can no longer see because the user does not have the role(s)
+    foreach ($courses as $key2 => $course) {
+
+        foreach ($capcourses as $key => $capcourse) {
+
+            if ($course->id == $capcourse->id) {
+                $found = true;
+                break;
             } else {
-
-                // Reset delkey flag
-                $delkey = false;
+                $found = false;
             }
+        }
 
-        } while (($rec = each($crsfav)));
-
-        // Check delkey flag.  If set then there is a record that has not been
-        // removed yet
-        if ($delkey) {
-            delete_records('block_course_favourites_selection', 'id', $delkey);
+        // If the favourite course was not found in the courses the user is capable of seeing then remove it
+        if (!$found) {
+            unset($courses[$key2]);
         }
     }
 
-    $i = 0;
-    for ($i = 0; $i < count($crsfav); $i++) {
+    // Update fav courses if any have been deleted
+    if (count($courses) != count($coursesori)) {
+        $crsfav->sequence = implode(',', array_keys($courses));
+        update_record('block_course_favourites', $crsfav);
     }
 
-    foreach ($crsfav as $key => $data) {
-        if (!record_exists('course', 'id', $crsfav->courseid)) {
+    return $courses;
 
+}
+
+/**
+ * Remove deleted courses
+ */
+function remove_deleted_courses($usrcourses = array()) {
+
+    if (empty($usrcourses)) {
+        return $usrcourses;
+    }
+
+    $tempcourses = array_combine($usrcourses, $usrcourses);
+
+    $allcourses = get_records('course');
+
+    // Verify whether the any of the favourite courses still exist
+    foreach ($tempcourses as $key => $courseid) {
+        if (!array_key_exists($key, $allcourses)) {
+            unset($tempcourses[$key]);
+        } else {
+            $tempcourses[$key] = new stdClass();
+            $tempcourses[$key]->id = $key;
+            $tempcourses[$key]->fullname = format_string($allcourses[$key]->fullname);
+            $tempcourses[$key]->visible = $allcourses[$key]->visible;
+            $tempcourses[$key]->fav = 1;
         }
     }
-    return $crsfav;
+
+    return $tempcourses;
 }
 
 /**
@@ -63,37 +94,96 @@ function get_user_fav_courses($blockinstance, $userid) {
  * including the user's favorite selected courses
  *
  */
-function get_courses_list($userobj, $showall = false, $favcourses = array()) {
-    $courses = array();
+function get_complete_course_list($userobj, $showall = 0, $favcourses = array()) {
 
-    // Non-cached - get accessinfo
-    if (isset($userobj->access)) {
-        $accessinfo = $userobj->access;
+      // Non-cached - get accessinfo
+      if (isset($userobj->access)) {
+          $accessinfo = $userobj->access;
+      } else {
+          $accessinfo = get_user_access_sitewide($userobj->id);
+      }
+
+      // Get courses the user is allowed to see
+      $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, false,
+                                        'c.sortorder ASC', array('visible', 'fullname'));
+
+
+      $templist = $favcourses;
+
+      foreach ($capcourses as $courses) {
+          if (1 == $courses->id) {
+              continue;
+          }
+
+          if (!array_key_exists($courses->id, $favcourses)) {
+              $index = $courses->id;
+              $templist[$index]->id = $index;
+              $templist[$index]->fullname = $courses->fullname;
+              $templist[$index]->visible = $courses->visible;
+              $templist[$index]->fav = 0;
+          }
+      }
+
+      return $templist;
+
+}
+
+function add_favourite_course($blockinstance, $userid, $courseid, $previous) {
+    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+
+    $templist = array();
+    $insert = false;
+    $favourites = explode(',', $crsfav->sequence);
+
+    // Check if the favourite course is the first course in the list
+    if (0 == strcmp('first', $previous)) {
+        $crsfav->sequence = $courseid . ',' . $crsfav->sequence;
+        //update_record('block_course_favourites', $crsfav);
+    }
+
+    if (false !== strpos($crsfav->sequence, $previous)) {
+        $crsfav->sequence = str_replace($previous, $previous . ',' .$courseid, $crsfav->sequence);
     } else {
-        $accessinfo = get_user_access_sitewide($userobj->id);
+        $crsfav->sequence = $crsfav->sequence . ',' . $courseid;
     }
+    trim($crsfav->sequence, ',');
 
-    // Get courses the user is allowed to see
-    $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, false,
-                                      'c.sortorder ASC', array('visible'));
+    print_object(var_dump($crsfav->sequence));
 
-    // Remove courses that are hidden
-    if (!$showall) {
-        foreach ($capcourses as $key => $data) {
-            if ($data->visible) {
-                // Re-map the array so that the course ids are keys
-                // to the array
-                $courses[$data->id] = $data;
-            }
-        }
-    } else { // Remap
-        foreach ($capcourses as $key => $data) {
-            $courses[$data->id] = $data;
-        }
-    }
+    $key = array_search($previous, $favourites);
+//
+//    if ((count($favourites) - 1) == $key) {
+//        $crsfav->sequence = $crsfav->sequence . ',' . $courseid;
+//        // Set favourites array to be empty to avoid going through a loop
+//        $favourites = array();
+//
+//    }
+//
+//    // Insert new favourite course into list
+//    foreach ($favourites as $key => $favourite) {
+//print_object(var_dump($insert));
+//        if ($insert) {
+//            $templist[] = $courseid;
+//
+//        }
+//
+//
+//        if ($previous == $favourite) { // If we enter in here, then we know that the favourite needs to be inserted afterwards
+//            $insert = true;
+//
+//        } else {
+//          print_object('okay');
+//            $insert = false;
+//        }
+//
+//        $templist[] = $favourite;
+//    }
+//
+//    if (!empty($templist)) {
+//        $crsfav->sequence = implode(',', $templist);
+//    }
 
 
-
-
+    return;
 }
 ?>

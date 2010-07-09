@@ -55,7 +55,6 @@
 
     // Check whether AJAX is needed
     if (ajaxenabled($ajaxtestedbrowsers) && $USER->ajax) {     // Browser, user and site-based switches
-
         $useajax = true;
 
         require_js(array('yui_yahoo',
@@ -96,6 +95,16 @@
 
     // Get a list of all courses
     $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
+
+    print_simple_box_start('center', '75%', '', '', 'generalbox');
+
+    // TODO: Define the language strings for the helptext and then uncomment the lines
+    //       below (maybe choose an appropriate class, too).
+    if ($useajax) {
+        //print_simple_box(get_string('helptextajax', 'block_course_favourites'), 'center', '75%');
+    } else {
+        //print_simple_box(get_string('helptextnoajax', 'block_course_favourites'), 'center', '75%');
+    }
 
     // print output
 
@@ -147,7 +156,7 @@
         // Adding CSS class information
         if ($course->fav) {
             $class = 'class="coursefav usrfav"';
-            $style = 'style="background-color: #FFFFCC;"';
+            $style = '';
         } else {
             $class = 'class="coursefav"';
             $style = '';
@@ -235,6 +244,8 @@
     echo '</div>'."\n";
 
     echo '</div>'."\n";
+
+    print_simple_box_end();
 
     // check for $useajax again //  $USER->ajax
     if ($useajax && $USER->ajax) {

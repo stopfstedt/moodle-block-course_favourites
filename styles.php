@@ -1,5 +1,5 @@
 #favlist {
-    //margin-right:850px;
+<!--    width: 75%;-->
 }
 
 #favlist ul {
@@ -13,15 +13,17 @@
 }
 
 #favlist_header1 {
-    //margin-right:850px;
+<!--    margin-right:850px;-->
 }
 
 #favlist_header1 #action-header {
-    float:right;
+    float: right;
+    font-weight: bold;
 }
 
 #favlist_header1 #course-header {
-    margin-left:100px;
+    margin-left: 100px;
+    font-weight: bold;
 }
 
 #favlist_header1 {
@@ -29,7 +31,14 @@
 }
 
 #block_course_fav {
-    margin-right:850px;
+    margin: 0 10%;
+<!--    margin-right: 10%;-->
     border-style:solid;
     border-width:thin;
+}
+
+.usrfav {
+    background-color: rgb(255, 255, 200);
+    font-weight: bold;
+    padding: 0.2em;
 }

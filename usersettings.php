@@ -11,7 +11,7 @@
     $action       = optional_param('action', '', PARAM_TEXT);
     //$previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
     $movecourseid = optional_param('movecourseid', 0, PARAM_INT);
-    $sortorder     = optional_param('sortorder', '', PARAM_SEQUENCE);
+    $sortorder    = optional_param('sortorder', '', PARAM_SEQUENCE);
 
     require_login();
 
@@ -92,6 +92,14 @@
     $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
 
     print_simple_box_start('center', '75%', '', '', 'generalbox');
+
+    // TODO: Define the language strings for the helptext and then uncomment the lines
+    //       below (maybe choose an appropriate class, too).
+    if ($useajax) {
+        //print_simple_box(get_string('helptextajax', 'block_course_favourites'), 'center', '75%');
+    } else {
+        //print_simple_box(get_string('helptextnoajax', 'block_course_favourites'), 'center', '75%');
+    }
 
     // print output
 
@@ -231,6 +239,8 @@
     echo '</div>'."\n";
 
     echo '</div>'."\n";
+
+    print_simple_box_end();
 
     // check for $useajax again //  $USER->ajax
     if ($useajax && $USER->ajax) {

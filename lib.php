@@ -171,7 +171,6 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 
     update_record('block_course_favourites', $crsfav);
 
-
     return;
 }
 

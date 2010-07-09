@@ -23,8 +23,6 @@ $data->userid = $userid;
 $data->sortorder = $sortorder;
 
 if ($id = get_field('block_course_favourites', 'id', 'blockid', $blockid, 'userid', $userid)) {
-
-
     if (!empty($id)) {
         // update record
         $data->id = $id;

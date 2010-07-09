@@ -11,7 +11,7 @@ coursefav_main.prototype.connect = function(method, urlStub, callback, body) {
 
     var uri = this.portal.strings['wwwroot'] + "/blocks/course_favourites/rest.php?sesskey=" + this.portal.strings['sesskey'];
     
-    var postdata = "blockid=" + this.portal.strings['blockid'] + "&userid=" + this.portal.strings['userid'] + '&sequence=' + body;
+    var postdata = "blockid=" + this.portal.strings['blockid'] + "&userid=" + this.portal.strings['userid'] + '&sortorder=' + body;
 
     return YAHOO.util.Connect.asyncRequest(method, uri, callback, postdata);
 

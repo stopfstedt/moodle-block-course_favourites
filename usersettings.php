@@ -138,7 +138,6 @@
             $class2 = '';
         }
 
-
         // Printing the sorted list
         echo '<li id="course-'.$coursid.'" '.$class.'>'."\n";
 
@@ -189,7 +188,7 @@
 
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
                  '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
-                 $previous.'&amp;ssortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
+                 $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
         }
 

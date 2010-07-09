@@ -135,12 +135,23 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 
     $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
 
+    // Insert new record
+    if (empty($crsfav)) {
+        $crsfav = new stdClass;
+        $crsfav->userid = $userid;
+        $crsfav->blockid = $blockinstance;
+        $crsfav->sortorder = $courseid;
+        insert_record('block_course_favourites', $crsfav);
+
+        return;
+    }
+
+
     $templist = array();
     $insert = false;
     $favourites = explode(',', $crsfav->sortorder);
     $sortorder = trim($sortorder, ',');
     $courselist = explode(',', $sortorder);
-
 
     // This course it the first in the list
     if (empty($sortorder)) {

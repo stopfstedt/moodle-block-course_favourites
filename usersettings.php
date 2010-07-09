@@ -50,7 +50,6 @@
 
     // Check whether AJAX is needed
     if (ajaxenabled($ajaxtestedbrowsers) && $USER->ajax) {     // Browser, user and site-based switches
-
         $useajax = true;
 
         require_js(array('yui_yahoo',
@@ -142,7 +141,7 @@
         // Adding CSS class information
         if ($course->fav) {
             $class = 'class="coursefav usrfav"';
-            $style = 'style="background-color: #FFFFCC;"';
+            $style = '';
         } else {
             $class = 'class="coursefav"';
             $style = '';

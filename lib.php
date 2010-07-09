@@ -171,6 +171,7 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 
     update_record('block_course_favourites', $crsfav);
 
+
     return;
 }
 
@@ -195,15 +196,86 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
     return;
  }
 
- function move_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
+/**
+ * Code to move a course from one spot to another
+ */
+function move_favourite_course($blockinstance, $userid, $coursetomove, $courseid, $sortorder) {
     $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
 
     $templist = explode(',', $crsfav->sortorder);
+    $sortorder = trim($sortorder, ',');
+    $sortorder = explode(',', $sortorder);
 
     // If the course selected to move isn't a marked as a course favourite then do nothing
-    if (false === array_search($courseid, $templist)) {
+    if (false === array_search($coursetomove, $templist)) {
         return;
+    } else {
+
+        // Check if the course to be moved is either the last or second last
+        // course id in the sequence.  If so then no move needs to happen
+        $last = count($sortorder) - 1;
+
+        $orikey = array_search($coursetomove, $sortorder);
+
+        if (false !== $orikey && ($last == $orikey) || ($orikey == ($last - 1))) {
+            // No move is neccessary
+            return;
+        } else {
+
+            // Check if $courseid is 'fist' or 'last'
+            if (0 == strcmp('first', $courseid)) {
+
+                // Find the course that is to be moved, and remove it from the sort order
+                $orikey = array_search($coursetomove, $templist);
+                unset($templist[$orikey]);
+
+                // Update the sort order with the removed course
+                $crsfav->sortorder = implode(',', $templist);
+
+                // Update the sort order with the new order
+                $crsfav->sortorder = $coursetomove . ',' .$crsfav->sortorder;
+                update_record('block_course_favourites', $crsfav);
+                return;
+
+            } elseif (0 == strcmp('last', $courseid)) {
+
+                // Find the course that is to be moved, and remove it from the sort order
+                $orikey = array_search($coursetomove, $templist);
+                unset($templist[$orikey]);
+
+                // Update the sort order with the removed course
+                $crsfav->sortorder = implode(',', $templist);
+
+                $crsfav->sortorder =  $crsfav->sortorder . ',' . $coursetomove;
+                update_record('block_course_favourites', $crsfav);
+                return;
+            }
+
+            // A move is needed, retrieve the location of the course where the
+            // selected course is going to move to
+            $key = array_search($courseid, $templist);
+
+
+            if (false !== $key && ( false !== strpos($crsfav->sortorder, $templist[$key]) ) ) {
+
+                // Remove the original course from the list as it is about to be moved
+                // to a new location
+                $orikey = array_search($coursetomove, $templist);
+                unset($templist[$orikey]);
+                $crsfav->sortorder = implode(',', $templist);
+
+
+                // Insert the course to be move in the new list now
+                $crsfav->sortorder = str_replace($templist[$key], $courseid . ',' . $coursetomove, $crsfav->sortorder);
+            }
+        }
+
+        update_record('block_course_favourites', $crsfav);
+
     }
+
+
+
  }
 
 ?>

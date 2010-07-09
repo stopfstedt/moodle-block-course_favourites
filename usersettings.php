@@ -9,9 +9,9 @@
     $courseid     = required_param('courseid', PARAM_INT);
     $favcourseid  = optional_param('favcourseid', 0, PARAM_INT);
     $action       = optional_param('action', '', PARAM_TEXT);
-    //$previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
+    $previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
     $movecourseid = optional_param('movecourseid', 0, PARAM_INT);
-    $sortorder     = optional_param('sortorder', '', PARAM_SEQUENCE);
+    $sortorder    = optional_param('sortorder', '', PARAM_SEQUENCE);
 
     require_login();
 
@@ -44,7 +44,12 @@
     } else {
         // Do move work here
         if ($favcourseid) {
-            move_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
+            move_favourite_course($blockid, $USER->id, $movecourseid, $previous, $sortorder);
+            $previous = '';
+            $favcourseid = 0;
+            $action = '';
+            $movecourseid = '';
+            $sortorder = '';
         }
     }
 
@@ -160,8 +165,8 @@
         // If action equals 'move', then add movement icons inbetween list
         if (0 == strcmp('move', $action)) {
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
-                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
-                 $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
+                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous='.
+                 $previouscourse.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a><br />';
             // TODO use language strings in title and alt attributes
         }
@@ -174,7 +179,7 @@
         // this one is special because it is the last one in the list
         if (0 == strcmp('move', $action) && ($last == $i)) {
             echo '<br /><a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
-                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous=last'.
+                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous=last'.
                  '&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a>';
 

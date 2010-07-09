@@ -179,6 +179,7 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
  * Remove a favourites course from the favourties list
  */
  function remove_favourite_course($blockinstance, $userid, $courseid) {
+
     $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
 
     $templist = explode(',', $crsfav->sortorder);
@@ -194,4 +195,16 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 
     return;
  }
+
+ function move_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
+    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+
+    $templist = explode(',', $crsfav->sortorder);
+
+    // If the course selected to move isn't a marked as a course favourite then do nothing
+    if (false === array_search($courseid, $templist)) {
+        return;
+    }
+ }
+
 ?>

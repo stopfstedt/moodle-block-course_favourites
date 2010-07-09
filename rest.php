@@ -6,7 +6,7 @@ require_once($CFG->libdir . '/dmllib.php');
 
 $blockid    = required_param('blockid', PARAM_INT);
 $userid     = required_param('userid', PARAM_INT);
-$sortorder   = required_param('sortorder', PARAM_SEQUENCE);
+$sortorder  = required_param('sortorder', PARAM_SEQUENCE);
 
 // Check for permissions .... ?
 

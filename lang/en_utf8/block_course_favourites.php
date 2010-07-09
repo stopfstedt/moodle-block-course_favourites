@@ -6,4 +6,6 @@ $string['coursesheader'] = 'Courses';
 $string['actionheader'] = 'Action';
 $string['settings'] = 'Settings';
 $string['noselecedcoursesforyou'] = 'No favourite courses selected';
+$string['cancel'] = 'Cancel';
+$string['areyousuremove'] = 'Are you sure you want to move $a';
 ?>

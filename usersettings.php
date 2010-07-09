@@ -24,7 +24,7 @@
     $usrpref = get_user_preferences(null, null, $USER->id);
 
 
-    if (!$movecourseid and 'move' != $action) {
+    if (!$movecourseid && 'move' != $action) {
 
         // Check if a favourite was selected
         switch ($action) {
@@ -43,6 +43,9 @@
 
     } else {
         // Do move work here
+        if ($favcourseid) {
+            move_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
+        }
     }
 
     // Check whether AJAX is needed
@@ -67,7 +70,7 @@
 
     $navlinks = array();
 
-    if ($courseid and 1 < $courseid) {
+    if ($courseid && 1 < $courseid) {
         $shortname = get_field('course', 'shortname', 'id', $courseid);
         $navlinks[] = array('name' => format_string($shortname), 'link' => "view.php?id=$courseid", 'type' => 'link');
     }
@@ -90,6 +93,17 @@
     $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
 
     // print output
+
+    // Print 'are you sure' link if move has been initiated
+    if (0 == strcmp('move', $action)) {
+      echo '<div>';
+      echo get_string('areyousuremove', 'block_course_favourites', $allcourses[$movecourseid]->fullname) .
+           '&nbsp;&nbsp;( <a href="usersettings.php?action=cancel&amp;sesskey='.$USER->sesskey.
+           '&amp;blockid=' . $blockid . '&amp;courseid=' . $courseid .
+           '">' . get_string('cancel', 'block_course_favourites') . '</a> )<br />';
+      echo '</div>';
+    }
+
     echo '<div id="block_course_fav">'."\n";
 
     echo '<div id="favlist_header1" class="favlist_header">'."\n";
@@ -107,6 +121,8 @@
     $last           = count($coursekeys);
     $previouscourse = $coursekeys[0];
     $sortorder      = '';
+    $previous       = '';
+    $actionparam    = '';
 
     foreach ($allcourses as $coursid => $course) {
 
@@ -146,8 +162,8 @@
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
                  '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
                  $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
-                 '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a>';
-
+                 '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a><br />';
+            // TODO use language strings in title and alt attributes
         }
 
         echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/view.php?id=' . $course->id .
@@ -156,10 +172,20 @@
 
         // If action equals 'move', then add movement icons inbetween list
         // this one is special because it is the last one in the list
-        if (0 == strcmp('move', $action)) {
+        if (0 == strcmp('move', $action) && ($last == $i)) {
+            echo '<br /><a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous=last'.
+                 '&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
+                 '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a>';
+
         }
 
-        echo '<span class="commands">'."\n";
+        // Do more CSS fun if this is the last element and we're moving
+        if (0 == strcmp('move', $action) && ($last == $i)) {
+            echo '<span class="commands">'."\n";
+        } else {
+            echo '<span class="commands">'."\n";
+        }
 
         // Print button for non AJAX version
         if (!$useajax && !$USER->ajax) {
@@ -174,10 +200,12 @@
 
             // Check if the course is already a favourite and add the appropriate parameter to denote that
             if ($course->fav) {
-                $action = 'remove';
+                $actionparam = 'remove';
             } else {
-                $action = 'add';
+                $actionparam = 'add';
             }
+
+            // TODO use language strings in title and alt attributes
 
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
                  '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
@@ -187,7 +215,7 @@
             echo '&nbsp;&nbsp;';
 
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
-                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
+                 '&amp;favcourseid='.$course->id.'&amp;action='.$actionparam.'&amp;previous='.
                  $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
         }

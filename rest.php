@@ -6,7 +6,7 @@ require_once($CFG->libdir . '/dmllib.php');
 
 $blockid    = required_param('blockid', PARAM_INT);
 $userid     = required_param('userid', PARAM_INT);
-$sortorder   = required_param('sortorder', PARAM_SEQUENCE);
+$sortorder   = required_param('sortorder', PARAM_INT);
 
 // Check for permissions .... ?
 
@@ -23,8 +23,6 @@ $data->userid = $userid;
 $data->sortorder = $sortorder;
 
 if ($id = get_field('block_course_favourites', 'id', 'blockid', $blockid, 'userid', $userid)) {
-
-
     if (!empty($id)) {
         // update record
         $data->id = $id;

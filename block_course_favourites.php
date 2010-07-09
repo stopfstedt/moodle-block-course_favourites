@@ -43,7 +43,7 @@ class block_course_favourites extends block_base {
                 $noselection = true;
 
                 // Verify further whether the user has created their favourites list
-                if (($sequence = get_field('block_course_favourites', 'sequence', 'userid', $USER->id, 'blockid', $this->instance->id))) {
+                if (($sortorder = get_field('block_course_favourites', 'sortorder', 'userid', $USER->id, 'blockid', $this->instance->id))) {
 
                     $noselection = false;
 

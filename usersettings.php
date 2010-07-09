@@ -9,8 +9,9 @@
     $courseid     = required_param('courseid', PARAM_INT);
     $favcourseid  = optional_param('favcourseid', 0, PARAM_INT);
     $action       = optional_param('action', '', PARAM_TEXT);
-    $previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
+    //$previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
     $movecourseid = optional_param('movecourseid', 0, PARAM_INT);
+    $sortorder     = optional_param('sortorder', '', PARAM_SEQUENCE);
 
     require_login();
 
@@ -23,24 +24,25 @@
     $usrpref = get_user_preferences(null, null, $USER->id);
 
 
-    if (!$movecourseid) {
+    if (!$movecourseid and 'move' != $action) {
 
         // Check if a favourite was selected
         switch ($action) {
             case 'add':
 
                 if ($favcourseid) {
-                    add_favourite_course($blockid, $USER->id, $favcourseid, $previous);
+                    add_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
                 }
                 break;
             case 'remove':
-
+                if ($favcourseid) {
+                    remove_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
+                }
                 break;
         }
 
     } else {
-
-       // Handle move action
+        // Do move work here
     }
 
     // Check whether AJAX is needed
@@ -100,10 +102,11 @@
 
 
     // Return all the keys in the list to keep track of previous iterations
-    $coursekeys = array_keys($allcourses);
-    $i = 1;
-    $last = count($coursekeys);
+    $coursekeys     = array_keys($allcourses);
+    $i              = 1;
+    $last           = count($coursekeys);
     $previouscourse = $coursekeys[0];
+    $sortorder      = '';
 
     foreach ($allcourses as $coursid => $course) {
 
@@ -111,12 +114,14 @@
         // This is needed to determine exactly where an course is marked favourite
         // in order to maintain the correct order.  It's also used when re-ordering
         // the coureses
-
         if ($i >= 2) {
             $previouscourse = $coursekeys[$i-2];
         } elseif (1 == $i) {
             $previouscourse = 'first';
         }
+
+        // Create an order of couses in the list
+        $sortorder .= $course->id . ',';
 
         // Adding CSS class information
         if ($course->fav) {
@@ -133,10 +138,28 @@
             $class2 = '';
         }
 
+
         // Printing the sorted list
         echo '<li id="course-'.$coursid.'" '.$class.'>'."\n";
+
+        // If action equals 'move', then add movement icons inbetween list
+        if (0 == strcmp('move', $action)) {
+            echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+                 '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
+                 $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
+                 '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a>';
+
+        }
+
         echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/view.php?id=' . $course->id .
               '" ' . $class2 . ' ' . $style . '>'. $course->fullname . '</a>'."\n";
+
+
+        // If action equals 'move', then add movement icons inbetween list
+        // this one is special because it is the last one in the list
+        if (0 == strcmp('move', $action)) {
+        }
+
         echo '<span class="commands">'."\n";
 
         // Print button for non AJAX version
@@ -158,7 +181,7 @@
             }
 
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
-                 '&amp;movecourseid='.$course->id.'&amp;previous='.$previous.'&amp;sesskey='.$USER->sesskey.
+                 '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
                  '" title="Move">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/t/move.gif" alt="Move" /></a>';
 
@@ -166,7 +189,7 @@
 
             echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
                  '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;previous='.
-                 $previous.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
+                 $previous.'&amp;ssortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
                  '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
         }
 
@@ -182,8 +205,10 @@
     echo '</div>'."\n";
 
     // check for $useajax again //  $USER->ajax
-    $blockportal = new coursefav_jsportal();
-    $blockportal->print_javascript($blockid);
+    if ($useajax && $USER->ajax) {
+        $blockportal = new coursefav_jsportal();
+        $blockportal->print_javascript($blockid);
+    }
     print_footer();
 
 ?>

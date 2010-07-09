@@ -14,7 +14,7 @@ function get_user_fav_courses($blockinstance, $userid) {
 
     // Explode course list into an array
     if (!empty($crsfav)) {
-        $coursesori = explode(',', $crsfav->sequence);
+        $coursesori = explode(',', $crsfav->sortorder);
 
     } else {
         return array();
@@ -52,7 +52,7 @@ function get_user_fav_courses($blockinstance, $userid) {
 
     // Update fav courses if any have been deleted
     if (count($courses) != count($coursesori)) {
-        $crsfav->sequence = implode(',', array_keys($courses));
+        $crsfav->sortorder = implode(',', array_keys($courses));
         update_record('block_course_favourites', $crsfav);
     }
 
@@ -128,62 +128,59 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
 
 }
 
-function add_favourite_course($blockinstance, $userid, $courseid, $previous) {
+/**
+ * Add a favourite course to the favourte courses list
+ */
+function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
+
     $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
 
     $templist = array();
     $insert = false;
-    $favourites = explode(',', $crsfav->sequence);
+    $favourites = explode(',', $crsfav->sortorder);
+    $sortorder = trim($sortorder, ',');
+    $courselist = explode(',', $sortorder);
 
-    // Check if the favourite course is the first course in the list
-    if (0 == strcmp('first', $previous)) {
-        $crsfav->sequence = $courseid . ',' . $crsfav->sequence;
-        //update_record('block_course_favourites', $crsfav);
-    }
 
-    if (false !== strpos($crsfav->sequence, $previous)) {
-        $crsfav->sequence = str_replace($previous, $previous . ',' .$courseid, $crsfav->sequence);
+    // This course it the first in the list
+    if (empty($sortorder)) {
+        $crsfav->sortorder = $courseid . ',' . $crsfav->sortorder;
     } else {
-        $crsfav->sequence = $crsfav->sequence . ',' . $courseid;
+        foreach ($courselist as $key => $data) {
+            if ($data == $courseid) {
+                $templist[] = $data;
+            } elseif (false !== array_search($data, $favourites)) {
+                $templist[] = $data;
+
+            }
+        }
+
+        $crsfav->sortorder = implode(',', $templist);
     }
-    trim($crsfav->sequence, ',');
 
-    print_object(var_dump($crsfav->sequence));
-
-    $key = array_search($previous, $favourites);
-//
-//    if ((count($favourites) - 1) == $key) {
-//        $crsfav->sequence = $crsfav->sequence . ',' . $courseid;
-//        // Set favourites array to be empty to avoid going through a loop
-//        $favourites = array();
-//
-//    }
-//
-//    // Insert new favourite course into list
-//    foreach ($favourites as $key => $favourite) {
-//print_object(var_dump($insert));
-//        if ($insert) {
-//            $templist[] = $courseid;
-//
-//        }
-//
-//
-//        if ($previous == $favourite) { // If we enter in here, then we know that the favourite needs to be inserted afterwards
-//            $insert = true;
-//
-//        } else {
-//          print_object('okay');
-//            $insert = false;
-//        }
-//
-//        $templist[] = $favourite;
-//    }
-//
-//    if (!empty($templist)) {
-//        $crsfav->sequence = implode(',', $templist);
-//    }
+    update_record('block_course_favourites', $crsfav);
 
 
     return;
 }
+
+/**
+ * Remove a favourites course from the favourties list
+ */
+ function remove_favourite_course($blockinstance, $userid, $courseid) {
+    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+
+    $templist = explode(',', $crsfav->sortorder);
+
+    $key = array_search($courseid, $templist);
+
+    if (false !== $key) {
+        unset($templist[$key]);
+        $crsfav->sortorder = implode(',', $templist);
+    }
+
+    update_record('block_course_favourites', $crsfav);
+
+    return;
+ }
 ?>

@@ -91,6 +91,8 @@
     // Get a list of all courses
     $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
 
+    print_simple_box_start('center', '75%', '', '', 'generalbox');
+
     // print output
 
     // Print 'are you sure' link if move has been initiated

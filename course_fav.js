@@ -23,10 +23,10 @@ YAHOO.DDApp = {
             var i = 1;
         }
  
-	for (i; i < allcourses_count; i++) {
-	    var classid = allcourses.childNodes[i].id
-            new YAHOO.DDList(classid, 'courses');
-	}
+	   for (i; i < allcourses_count; i++) {
+	       var classid = allcourses.childNodes[i].id
+         new YAHOO.DDList(classid, 'courses');
+	   }
 
         Event.on("showButton", "click", this.showOrder);
         Event.on("switchButton", "click", this.switchStyles);

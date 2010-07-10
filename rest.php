@@ -10,9 +10,7 @@ $sortorder  = required_param('sortorder', PARAM_SEQUENCE);
 
 // Check for permissions .... ?
 
-$ajaxtestedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111);
-
-if (!ajaxenabled($ajaxtestedbrowsers) || empty($USER->ajax)) {
+if (!ajaxenabled() || empty($USER->ajax)) {
     error_log('Course AJAX not allowed');
     die;
 }

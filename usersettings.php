@@ -19,7 +19,7 @@
 
     $useajax = false;
 
-    $ajaxtestedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111);
+//    $ajaxtestedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111);
 
     $usrpref = get_user_preferences(null, null, $USER->id);
 
@@ -54,7 +54,7 @@
     }
 
     // Check whether AJAX is needed
-    if (ajaxenabled($ajaxtestedbrowsers) && $USER->ajax) {     // Browser, user and site-based switches
+    if (ajaxenabled() && $USER->ajax) {     // Browser, user and site-based switches
         $useajax = true;
 
         require_js(array('yui_yahoo',
@@ -110,11 +110,11 @@
 
     // Print 'are you sure' link if move has been initiated
     if (0 == strcmp('move', $action)) {
-      echo '<div>';
+      echo '<div align="center">';
       echo get_string('areyousuremove', 'block_course_favourites', $allcourses[$movecourseid]->fullname) .
            '&nbsp;&nbsp;( <a href="usersettings.php?action=cancel&amp;sesskey='.$USER->sesskey.
            '&amp;blockid=' . $blockid . '&amp;courseid=' . $courseid .
-           '">' . get_string('cancel', 'block_course_favourites') . '</a> )<br />';
+           '">' . get_string('cancel', 'block_course_favourites') . '</a> )<br /><br />';
       echo '</div>';
     }
 

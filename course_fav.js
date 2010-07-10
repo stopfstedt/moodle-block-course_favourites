@@ -16,12 +16,17 @@ YAHOO.DDApp = {
 		var allcourses_count = allcourses.childNodes.length;
 
         new YAHOO.util.DDTarget('allclasses');
-
+        
+        if (/MSIE (\d+\.\d+);/.test(navigator.usrAgent)) {
+            var i = 0;
+        } else {
+            var i = 1;
+        }
  
-		for (var i=1; i < allcourses_count; i++) {
-			var classid = allcourses.childNodes[i].id
+	for (i; i < allcourses_count; i++) {
+	    var classid = allcourses.childNodes[i].id
             new YAHOO.DDList(classid, 'courses');
-		}
+	}
 
         Event.on("showButton", "click", this.showOrder);
         Event.on("switchButton", "click", this.switchStyles);

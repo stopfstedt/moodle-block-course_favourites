@@ -19,8 +19,6 @@
 
     $useajax = false;
 
-//    $ajaxtestedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111);
-
     $usrpref = get_user_preferences(null, null, $USER->id);
 
 

@@ -101,9 +101,11 @@
     // TODO: Define the language strings for the helptext and then uncomment the lines
     //       below (maybe choose an appropriate class, too).
     if ($useajax) {
-        print_simple_box(get_string('helptextajax', 'block_course_favourites'), 'center', '75%');
+        print_simple_box(get_string('helptextajax', 'block_course_favourites'),
+                         'center', '75%', '', '5', 'generalbox ajax-help');
     } else {
-        print_simple_box(get_string('helptextnoajax', 'block_course_favourites'), 'center', '75%');
+        print_simple_box(get_string('helptextnoajax', 'block_course_favourites'),
+                         'center', '75%', '', '5', 'generalbox non-ajax-help');
     }
 
     // print output

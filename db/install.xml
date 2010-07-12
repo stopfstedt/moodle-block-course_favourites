@@ -15,8 +15,8 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />
       </KEYS>
       <INDEXES>
-        <INDEX NAME="course_recent_userid" UNIQUE="false" FIELDS="userid" NEXT="course_recent_blockid"/>
-        <INDEX NAME="course_recent_blockid" UNIQUE="false" FIELDS="blockid" PREVIOUS="course_recent_userid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" NEXT="blockid"/>
+        <INDEX NAME="blockid" UNIQUE="false" FIELDS="blockid" PREVIOUS="userid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

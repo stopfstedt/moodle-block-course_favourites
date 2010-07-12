@@ -1,8 +1,8 @@
 <?php
 
-$string['blockname'] = 'Course Favorites';
+$string['blockname'] = 'Favorite Courses';
 $string['breadcrumb'] = 'Favorite Courses user settings';
-$string['course_favourites'] = 'Course Favorites';
+$string['course_favourites'] = 'Favorite Courses';
 $string['header'] = 'Favorite Courses';
 $string['noselecedcoursesforyou'] = 'No favorite courses selected';
 $string['helptextajax'] = 'To add a course as your favorite click the thumbs-up icon.  To re-order the list click and hold on the cross arrows, move the mouse'.

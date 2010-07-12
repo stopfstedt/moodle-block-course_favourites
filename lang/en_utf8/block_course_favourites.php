@@ -2,10 +2,10 @@
 
 $string['actionheader'] = 'Action';
 $string['areyousuremove'] = 'Are you sure you want to move $a';
-$string['blockname'] = 'Course Favourites';
+$string['blockname'] = 'Favourite Courses';
 $string['breadcrumb'] = 'Favourite Courses user settings';
 $string['cancel'] = 'Cancel';
-$string['course_favourites'] = 'Course Favourites';
+$string['course_favourites'] = 'Favourites Courses';
 $string['coursesforyou'] = 'Click the link to select courses to display here';
 $string['coursesheader'] = 'Courses';
 $string['header'] = 'Favourite Courses';

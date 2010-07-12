@@ -1,7 +1,3 @@
-#favlist {
-<!--    width: 75%;-->
-}
-
 #favlist ul {
     list-style: none;
     padding: 0;
@@ -10,10 +6,6 @@
 
 #favlist ul li span {
     float:right;
-}
-
-#favlist_header1 {
-<!--    margin-right:850px;-->
 }
 
 #favlist_header1 #action-header {
@@ -32,7 +24,6 @@
 
 #block_course_fav {
     margin: 0 10%;
-<!--    margin-right: 10%;-->
     border-style:solid;
     border-width:thin;
 }

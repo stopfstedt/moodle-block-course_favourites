@@ -92,18 +92,18 @@ function remove_deleted_courses($usrcourses = array()) {
 
     $tempcourses = array_combine($usrcourses, $usrcourses);
 
-    $allcourses = get_records('course');
+//    $allcourses = get_records('course');
 
     // Verify whether the any of the favourite courses still exist
     foreach ($tempcourses as $key => $courseid) {
-        if (!array_key_exists($key, $allcourses)) {
+        if (!record_exists('course', 'id', $courseid)) {
             unset($tempcourses[$key]);
         } else {
             $tempcourses[$key] = new stdClass();
-            $tempcourses[$key]->id = $key;
-            $tempcourses[$key]->fullname = format_string($allcourses[$key]->fullname);
-            $tempcourses[$key]->visible = $allcourses[$key]->visible;
-            $tempcourses[$key]->fav = 1;
+            $tempcourses[$key]->id       = $key;
+            $tempcourses[$key]->fullname = get_field('course', 'fullname', 'id', $courseid);
+            $tempcourses[$key]->visible  = get_field('course', 'visible', 'id', $courseid);
+            $tempcourses[$key]->fav      = 1;
         }
     }
 
@@ -114,8 +114,10 @@ function remove_deleted_courses($usrcourses = array()) {
  * Return an array of all the courese that exist
  * including the user's favorite selected courses
  *
+ * @uses $CFG
  */
 function get_complete_course_list($userobj, $showall = 0, $favcourses = array()) {
+    global $CFG;
 
       // Non-cached - get accessinfo
       if (isset($userobj->access)) {
@@ -124,24 +126,25 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
           $accessinfo = get_user_access_sitewide($userobj->id);
       }
 
-      // Get courses the user is allowed to see
-      $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, false,
-                                        'c.sortorder ASC', array('visible', 'fullname'));
+      $doanything = empty($CFG->block_course_favourites_musthaverole);
 
+      // Get courses the user is allowed to see
+      $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, $doanything,
+                                           'c.sortorder ASC', array('visible', 'fullname'));
 
       $templist = $favcourses;
 
-      foreach ($capcourses as $courses) {
-          if (1 == $courses->id) {
+      foreach ($capcourses as $course) {
+          if ($course->id === SITEID) {
               continue;
           }
 
-          if (!array_key_exists($courses->id, $favcourses)) {
-              $index = $courses->id;
-              $templist[$index]->id = $index;
-              $templist[$index]->fullname = $courses->fullname;
-              $templist[$index]->visible = $courses->visible;
-              $templist[$index]->fav = 0;
+          if (!array_key_exists($course->id, $favcourses)) {
+              $index = $course->id;
+              $templist[$index]->id       = $index;
+              $templist[$index]->fullname = $course->fullname;
+              $templist[$index]->visible  = $course->visible;
+              $templist[$index]->fav      = 0;
           }
       }
 

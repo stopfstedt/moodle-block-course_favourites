@@ -91,9 +91,13 @@ if (ajaxenabled() && $USER->ajax) {     // Browser, user and site-based switches
 
 $navlinks = array();
 
-if ($courseid && 1 < $courseid) {
+if ($courseid && $courseid !== SITEID) {
     $shortname = get_field('course', 'shortname', 'id', $courseid);
-    $navlinks[] = array('name' => format_string($shortname), 'link' => "view.php?id=$courseid", 'type' => 'link');
+    $navlinks[] = array(
+        'name' => format_string($shortname),
+        'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
+        'type' => 'link'
+    );
 }
 
 $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_favourites'), 'link' => '', 'type' => 'misc');

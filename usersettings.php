@@ -96,9 +96,9 @@ if ($courseid && 1 < $courseid) {
     $navlinks[] = array('name' => format_string($shortname), 'link' => "view.php?id=$courseid", 'type' => 'link');
 }
 
-$navlinks[] = array('name' => get_string('breadcrumb', 'block_course_recent'), 'link' => '', 'type' => 'misc');
+$navlinks[] = array('name' => get_string('breadcrumb', 'block_course_favourites'), 'link' => '', 'type' => 'misc');
 $navigation = build_navigation($navlinks);
-print_header_simple(get_string('header', 'block_course_recent'), '', $navigation);
+print_header_simple(get_string('header', 'block_course_favourites'), '', $navigation);
 
 // Check if this use has configured this block instance before
 $favcourses = get_user_fav_courses($blockid, $USER->id);
@@ -199,7 +199,7 @@ foreach ($allcourses as $coursid => $course) {
         // TODO use language strings in title and alt attributes
     }
 
-    echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/view.php?id=' . $course->id .
+    echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/course/view.php?id=' . $course->id .
           '" ' . $class2 . ' ' . $style . '>'. $course->fullname . '</a>'."\n";
 
 

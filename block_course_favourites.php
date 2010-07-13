@@ -62,7 +62,8 @@ class block_course_favourites extends block_list {
 
         // Verify if the user has a role in any course
         if (!empty($CFG->block_course_favourites_musthaverole) && !record_exists_sql($sql)) {
-            $text = get_string('nocoursesforyou', 'block_course_favourites');
+            $this->content->items[] = get_string('nocoursesforyou', 'block_course_favourites');
+            $this->content->icons[] = '';
         } else {
             $noselection = true;
 

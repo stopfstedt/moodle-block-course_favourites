@@ -89,7 +89,7 @@ if (ajaxenabled() && $USER->ajax) {     // Browser, user and site-based switches
 
 $navlinks = array();
 
-if ($courseid && $courseid !== SITEID) {
+if ($courseid && $courseid != SITEID) {
     $shortname = get_field('course', 'shortname', 'id', $courseid);
     $navlinks[] = array(
         'name' => format_string($shortname),

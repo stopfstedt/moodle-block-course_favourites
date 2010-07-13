@@ -22,7 +22,7 @@
 
 require_once($CFG->dirroot . '/blocks/course_favourites/lib.php');
 
-class block_course_favourites extends block_base {
+class block_course_favourites extends block_list {
     function init() {
         $this->title   = get_string('blockname', 'block_course_favourites');
         $this->version = 2010071300;
@@ -36,15 +36,16 @@ class block_course_favourites extends block_base {
         }
 
         $this->content         =  new stdClass;
-        $this->content->text   = '';
+        $this->content->items  = array();
+        $this->content->icons  = array();
         $this->content->footer = '';
 
         if (!isloggedin()) {
             return $this->content;
         }
 
-        $text = '';
-        $footer = '';
+        $icon  = '<img src="' . $CFG->pixpath . '/i/course.gif" class="icon" alt="' .
+                 get_string('coursecategory') . '" />';
 
         // Non-cached - get accessinfo
         if (isset($USER->access)) {
@@ -52,9 +53,6 @@ class block_course_favourites extends block_base {
         } else {
             $accessinfo = get_user_access_sitewide($USER->id);
         }
-
-//        $courses = get_user_courses_bycap($USER->id, 'gradereport/user:view', $accessinfo, false,
-//                                          'c.sortorder ASC', array('visible'));
 
         $sql = "SELECT ra.id
                 FROM {$CFG->prefix}role_assignments ra
@@ -74,8 +72,7 @@ class block_course_favourites extends block_base {
 
                 // Print list of courses work done here.....
                 $crsfavs = get_user_fav_courses($USER->id);
-
-                $class = '';
+                $class  = '';
 
                 if (!empty($crsfavs)) {
                     foreach ($crsfavs as $crsfav) {
@@ -85,29 +82,26 @@ class block_course_favourites extends block_base {
                             $class = 'class="dimmed"';
                         }
 
-                        $text .= '<div class="block-course-favs" >' .
-                                 '<a '. $class . ' href="' . $CFG->wwwroot . '/course/view.php?id=' .
-                                 $crsfav->id . '">' . format_string($crsfav->fullname) . '</a></div>';
+                        $this->content->items[] = '<a ' . $class . ' href="' . $CFG->wwwroot . '/course/view.php?id=' .
+                                                  $crsfav->id . '">' . format_string($crsfav->fullname) . '</a>';
+                        $this->content->icons[] = $icon;
                     }
                 }
 
-                $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?' .
-                          'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
-                          '</a>';
+                $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?' .
+                                         'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
+                                         '</a>';
             }
 
             // print intro/help message if no selection has been created by the user
             if ($noselection) {
-                $text = get_string('noselecedcoursesforyou', 'block_course_favourites');
+                $this->content->items[] = get_string('noselecedcoursesforyou', 'block_course_favourites');
+                $this->content->icons[] = '';
 
-                $footer = '<a href="' . $CFG->wwwroot . '/blocks/course_favourites/usersettings.php?' .
-                          'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
-                          '</a>';
+                $this->content->footer = '<a href="' . $CFG->wwwroot . '/blocks/course_favourites/usersettings.php?' .
+                                         'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
+                                         '</a>';
             }
-        }
-
-        if (!empty($text)) {
-            $this->content->text = $text;
         }
 
         if (!empty($footer)) {

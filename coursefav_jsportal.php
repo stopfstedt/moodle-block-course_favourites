@@ -23,7 +23,7 @@
 require_once($CFG->libdir . '/ajax/ajaxlib.php');
 
 class coursefav_jsportal extends jsportal {
-    function print_javascript($blockid, $courseid = 0, $return=false) {
+    function print_javascript($courseid = 0, $return=false) {
         global $CFG, $USER;
 
         $output = '';
@@ -41,7 +41,6 @@ class coursefav_jsportal extends jsportal {
         $output .= "    crsfavmain.portal.strings['pixpath']='".$CFG->pixpath."';\n";
         $output .= "    crsfavmain.portal.strings['move']='".get_string('move')."';\n";
         $output .= "    crsfavmain.portal.strings['sesskey']='".$USER->sesskey."';\n";
-        $output .= "    crsfavmain.portal.strings['blockid']='".$blockid."';\n";
         $output .= "    crsfavmain.portal.strings['userid']='".$USER->id."';\n";
         $output .= "</script>";
 

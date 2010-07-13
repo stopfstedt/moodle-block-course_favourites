@@ -26,7 +26,6 @@ require_once('coursefav_jsportal.php');
 
 defined('MOODLE_INTERNAL') OR die('Direct access to this script is forbidden');
 
-$blockid      = required_param('blockid', PARAM_INT);
 $courseid     = required_param('courseid', PARAM_INT);
 $favcourseid  = optional_param('favcourseid', 0, PARAM_INT);
 $action       = optional_param('action', '', PARAM_TEXT);
@@ -46,14 +45,13 @@ if (!$movecourseid && 'move' != $action) {
     // Check if a favourite was selected
     switch ($action) {
         case 'add':
-
             if ($favcourseid) {
-                add_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
+                add_favourite_course($USER->id, $favcourseid, $sortorder);
             }
             break;
         case 'remove':
             if ($favcourseid) {
-                remove_favourite_course($blockid, $USER->id, $favcourseid, $sortorder);
+                remove_favourite_course($USER->id, $favcourseid, $sortorder);
             }
             break;
     }
@@ -61,7 +59,7 @@ if (!$movecourseid && 'move' != $action) {
 } else {
     // Do move work here
     if ($favcourseid) {
-        move_favourite_course($blockid, $USER->id, $movecourseid, $previous, $sortorder);
+        move_favourite_course($USER->id, $movecourseid, $previous, $sortorder);
         $previous = '';
         $favcourseid = 0;
         $action = '';
@@ -105,7 +103,7 @@ $navigation = build_navigation($navlinks);
 print_header_simple(get_string('header', 'block_course_favourites'), '', $navigation);
 
 // Check if this use has configured this block instance before
-$favcourses = get_user_fav_courses($blockid, $USER->id);
+$favcourses = get_user_fav_courses($USER->id);
 
 // Check for capability for hidden courses
 $showhidden = 0;
@@ -136,8 +134,8 @@ if (0 == strcmp('move', $action)) {
   echo '<div align="center">';
   echo get_string('areyousuremove', 'block_course_favourites', $allcourses[$movecourseid]->fullname) .
        '&nbsp;&nbsp;( <a href="usersettings.php?action=cancel&amp;sesskey='.$USER->sesskey.
-       '&amp;blockid=' . $blockid . '&amp;courseid=' . $courseid .
-       '">' . get_string('cancel', 'block_course_favourites') . '</a> )<br /><br />';
+       '&amp;courseid=' . $courseid . '">' . get_string('cancel', 'block_course_favourites') .
+       '</a> )<br /><br />';
   echo '</div>';
 }
 
@@ -196,7 +194,7 @@ foreach ($allcourses as $coursid => $course) {
 
     // If action equals 'move', then add movement icons inbetween list
     if (0 == strcmp('move', $action)) {
-        echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+        echo '<a href="usersettings.php?courseid='.$courseid.
              '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous='.
              $previouscourse.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
              '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a><br />';
@@ -210,11 +208,10 @@ foreach ($allcourses as $coursid => $course) {
     // If action equals 'move', then add movement icons inbetween list
     // this one is special because it is the last one in the list
     if (0 == strcmp('move', $action) && ($last == $i)) {
-        echo '<br /><a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+        echo '<br /><a href="usersettings.php?courseid='.$courseid.
              '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous=last'.
              '&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
              '<img class="smallicon" src="'.$CFG->pixpath.'/movehere.gif" alt="Move Here" /></a>';
-
     }
 
     // Do more CSS fun if this is the last element and we're moving
@@ -226,7 +223,6 @@ foreach ($allcourses as $coursid => $course) {
 
     // Print button for non AJAX version
     if (!$useajax && !$USER->ajax) {
-
         // Add the previous course in the list as a parameter because we need to know
         // where in the list to insert the course
         if (array_key_exists($previouscourse, $allcourses)) {
@@ -244,14 +240,14 @@ foreach ($allcourses as $coursid => $course) {
 
         // TODO use language strings in title and alt attributes
 
-        echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+        echo '<a href="usersettings.php?courseid='.$courseid.
              '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
              '" title="Move">'.
              '<img class="smallicon" src="'.$CFG->pixpath.'/t/move.gif" alt="Move" /></a>';
 
         echo '&nbsp;&nbsp;';
 
-        echo '<a href="usersettings.php?blockid='.$blockid.'&amp;courseid='.$courseid.
+        echo '<a href="usersettings.php?courseid='.$courseid.
              '&amp;favcourseid='.$course->id.'&amp;action='.$actionparam.'&amp;previous='.
              $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
              '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
@@ -273,7 +269,7 @@ print_simple_box_end();
 // check for $useajax again //  $USER->ajax
 if ($useajax && $USER->ajax) {
     $blockportal = new coursefav_jsportal();
-    $blockportal->print_javascript($blockid);
+    $blockportal->print_javascript();
 }
 print_footer();
 

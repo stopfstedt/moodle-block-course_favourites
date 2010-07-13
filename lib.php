@@ -25,13 +25,13 @@
  *  in the correct order.  Also removes any courese that no longer
  *  exist
  */
-function get_user_fav_courses($blockinstance, $userid) {
+function get_user_fav_courses($userid) {
 
     $crsfav     = array();
     $courses    = array();
     $coursesori = array();
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+    $crsfav = get_record('block_course_favourites', 'userid', $userid);
 
     // Explode course list into an array
     if (!empty($crsfav)) {
@@ -155,15 +155,14 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
 /**
  * Add a favourite course to the favourte courses list
  */
-function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
+function add_favourite_course($userid, $courseid, $sortorder) {
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+    $crsfav = get_record('block_course_favourites', 'userid', $userid);
 
     // Insert new record
     if (empty($crsfav)) {
         $crsfav = new stdClass;
-        $crsfav->userid = $userid;
-        $crsfav->blockid = $blockinstance;
+        $crsfav->userid    = $userid;
         $crsfav->sortorder = $courseid;
         insert_record('block_course_favourites', $crsfav);
 
@@ -202,9 +201,9 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 /**
  * Remove a favourites course from the favourties list
  */
- function remove_favourite_course($blockinstance, $userid, $courseid) {
+ function remove_favourite_course($userid, $courseid) {
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+    $crsfav = get_record('block_course_favourites', 'userid', $userid);
 
     $templist = explode(',', $crsfav->sortorder);
 
@@ -223,8 +222,8 @@ function add_favourite_course($blockinstance, $userid, $courseid, $sortorder) {
 /**
  * Code to move a course from one spot to another
  */
-function move_favourite_course($blockinstance, $userid, $coursetomove, $courseid, $sortorder) {
-    $crsfav = get_record('block_course_favourites', 'userid', $userid, 'blockid', $blockinstance);
+function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
+    $crsfav = get_record('block_course_favourites', 'userid', $userid);
 
     $templist = explode(',', $crsfav->sortorder);
     $sortorder = trim($sortorder, ',');
@@ -241,7 +240,8 @@ function move_favourite_course($blockinstance, $userid, $coursetomove, $courseid
 
         $orikey = array_search($coursetomove, $sortorder);
 
-        if (false !== $orikey && ($last == $orikey) || ($orikey == ($last - 1))) {
+        // TODO: Why are we checking for second-last in the list and not moving it?
+        if (false !== $orikey && ($last == $orikey)) {
             // No move is neccessary
             return;
         } else {
@@ -262,14 +262,12 @@ function move_favourite_course($blockinstance, $userid, $coursetomove, $courseid
                 return;
 
             } elseif (0 == strcmp('last', $courseid)) {
-
                 // Find the course that is to be moved, and remove it from the sort order
                 $orikey = array_search($coursetomove, $templist);
                 unset($templist[$orikey]);
 
                 // Update the sort order with the removed course
                 $crsfav->sortorder = implode(',', $templist);
-
                 $crsfav->sortorder =  $crsfav->sortorder . ',' . $coursetomove;
                 update_record('block_course_favourites', $crsfav);
                 return;

@@ -30,10 +30,10 @@ function coursefav_main(){
 // Override the connect method
 coursefav_main.prototype.connect = function(method, urlStub, callback, body) {
 
-    var uri = this.portal.strings['wwwroot'] + "/blocks/course_favourites/rest.php";
+    var uri = this.portal.strings['wwwroot'] + '/blocks/course_favourites/rest.php';
     
-    var postdata = "blockid=" + this.portal.strings['blockid'] + "&userid=" + this.portal.strings['userid'] +
-                   '&sesskey=' + this.portal.strings['sesskey'] + '&sortorder=' + body;
+    var postdata = 'userid=' + this.portal.strings['userid'] + '&sesskey=' +
+                   this.portal.strings['sesskey'] + '&sortorder=' + body;
 
     return YAHOO.util.Connect.asyncRequest(method, uri, callback, postdata);
 

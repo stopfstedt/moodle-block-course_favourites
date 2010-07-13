@@ -24,8 +24,8 @@ require_once($CFG->dirroot . '/blocks/course_favourites/lib.php');
 
 class block_course_favourites extends block_base {
     function init() {
-        $this->title   = get_string('course_favourites', 'block_course_favourites');
-        $this->version = 201006290;
+        $this->title   = get_string('blockname', 'block_course_favourites');
+        $this->version = 2010071300;
     }
 
     function get_content() {
@@ -53,8 +53,8 @@ class block_course_favourites extends block_base {
             $accessinfo = get_user_access_sitewide($USER->id);
         }
 
-        $courses = get_user_courses_bycap($USER->id, 'gradereport/user:view', $accessinfo, false,
-                                          'c.sortorder ASC', array('visible'));
+//        $courses = get_user_courses_bycap($USER->id, 'gradereport/user:view', $accessinfo, false,
+//                                          'c.sortorder ASC', array('visible'));
 
         $sql = "SELECT ra.id
                 FROM {$CFG->prefix}role_assignments ra
@@ -69,12 +69,11 @@ class block_course_favourites extends block_base {
             $noselection = true;
 
             // Verify further whether the user has created their favourites list
-            if (($sortorder = get_field('block_course_favourites', 'sortorder', 'userid', $USER->id, 'blockid', $this->instance->id))) {
-
+            if (($sortorder = get_field('block_course_favourites', 'sortorder', 'userid', $USER->id))) {
                 $noselection = false;
 
                 // Print list of courses work done here.....
-                $crsfavs = get_user_fav_courses($this->instance->id, $USER->id);
+                $crsfavs = get_user_fav_courses($USER->id);
 
                 $class = '';
 
@@ -92,18 +91,18 @@ class block_course_favourites extends block_base {
                     }
                 }
 
-                $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?'.
-                          'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
-                          get_string('settings', 'block_course_favourites') . '</a>';
+                $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?' .
+                          'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
+                          '</a>';
             }
 
             // print intro/help message if no selection has been created by the user
             if ($noselection) {
                 $text = get_string('noselecedcoursesforyou', 'block_course_favourites');
 
-                $footer = '<a href="'.$CFG->wwwroot.'/blocks/course_favourites/usersettings.php?'.
-                          'blockid='. $this->instance->id.'&courseid='.$COURSE->id.'">'.
-                          get_string('settings', 'block_course_favourites') . '</a>';
+                $footer = '<a href="' . $CFG->wwwroot . '/blocks/course_favourites/usersettings.php?' .
+                          'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
+                          '</a>';
             }
         }
 

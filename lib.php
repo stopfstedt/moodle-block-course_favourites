@@ -96,7 +96,7 @@ function remove_deleted_courses($usrcourses = array()) {
 
     // Verify whether the any of the favourite courses still exist
     foreach ($tempcourses as $key => $courseid) {
-        if (!record_exists('course', 'id', $courseid)) {
+        if (empty($courseid) || !record_exists('course', 'id', $courseid)) {
             unset($tempcourses[$key]);
         } else {
             $tempcourses[$key] = new stdClass();
@@ -130,7 +130,7 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
 
       // Get courses the user is allowed to see
       $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, $doanything,
-                                           'c.sortorder ASC', array('visible', 'fullname'));
+                                           'c.fullname ASC', array('visible', 'fullname'));
 
       $templist = $favcourses;
 

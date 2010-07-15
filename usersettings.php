@@ -222,7 +222,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     // Print button for non AJAX version
-    if (!$useajax && !$USER->ajax) {
+    if (!$useajax || !$USER->ajax) {
         // Add the previous course in the list as a parameter because we need to know
         // where in the list to insert the course
         if (array_key_exists($previouscourse, $allcourses)) {
@@ -254,6 +254,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     echo '</span>'."\n";
+    echo '<div style="clear: right;"></div>' . "\n";
     echo '</li>';
 
     $i++;

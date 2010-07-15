@@ -5,7 +5,7 @@
 }
 
 #favlist ul li span {
-    float:right;
+    float: right;
 }
 
 #favlist_header1 #action-header {
@@ -19,13 +19,13 @@
 }
 
 #favlist_header1 {
-    background-color: #CCCCCC;
+    background-color: #cc;
 }
 
 #block_course_fav {
     margin: 0 10%;
-    border-style:solid;
-    border-width:thin;
+    border-style: solid;
+    border-width: thin;
 }
 
 .usrfav {

@@ -33,3 +33,7 @@
     font-weight: bold;
     padding: 0.2em;
 }
+
+.commands {
+    clear: right;
+}

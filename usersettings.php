@@ -254,7 +254,6 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     echo '</span>'."\n";
-    echo '<div style="clear: right;"></div>' . "\n";
     echo '</li>';
 
     $i++;

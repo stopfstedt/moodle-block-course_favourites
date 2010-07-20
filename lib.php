@@ -27,9 +27,12 @@
  */
 function get_user_fav_courses($userid) {
 
+    global $CFG;
+
     $crsfav     = array();
     $courses    = array();
     $coursesori = array();
+    $usrroles   = true;
 
     $crsfav = get_record('block_course_favourites', 'userid', $userid);
 
@@ -69,6 +72,19 @@ function get_user_fav_courses($userid) {
         if (!$found) {
             unset($courses[$key2]);
         }
+
+        // Also check the block setting.  If must have role is set, then user must have a
+        // role in the course context to be able to see the course.  If not then they will
+        // not be able to see the course even though it is marked as a favourite
+        if ($CFG->block_course_favourites_musthaverole) {
+            $context = get_context_instance(CONTEXT_COURSE, $course->id);
+            $usrroles = get_user_roles($context, $userid, false);
+        }
+
+        if (empty($usrroles)) {
+            unset($courses[$key2]);
+        }
+
     }
 
     // Update fav courses if any have been deleted
@@ -133,6 +149,7 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
                                            'c.fullname ASC', array('visible', 'fullname'));
 
       $templist = $favcourses;
+      $usrroles = true;
 
       foreach ($capcourses as $course) {
           if ($course->id === SITEID) {
@@ -140,11 +157,19 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
           }
 
           if (!array_key_exists($course->id, $favcourses)) {
-              $index = $course->id;
-              $templist[$index]->id       = $index;
-              $templist[$index]->fullname = $course->fullname;
-              $templist[$index]->visible  = $course->visible;
-              $templist[$index]->fav      = 0;
+
+              if ($CFG->block_course_favourites_musthaverole) {
+                  $context = get_context_instance(CONTEXT_COURSE, $course->id);
+                  $usrroles = get_user_roles($context, $userobj->id, false);
+              }
+
+              if (!empty($usrroles)) {
+                  $index = $course->id;
+                  $templist[$index]->id       = $index;
+                  $templist[$index]->fullname = $course->fullname;
+                  $templist[$index]->visible  = $course->visible;
+                  $templist[$index]->fav      = 0;
+              }
           }
       }
 

@@ -102,7 +102,7 @@ $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_favourites'
 $navigation = build_navigation($navlinks);
 print_header_simple(get_string('header', 'block_course_favourites'), '', $navigation);
 
-// Check if this use has configured this block instance before
+// Check if this user has configured this block instance before
 $favcourses = get_user_fav_courses($USER->id);
 
 // Check for capability for hidden courses
@@ -154,7 +154,7 @@ echo '<ul id="allclasses" class="section img-text">'."\n";
 $coursekeys     = array_keys($allcourses);
 $i              = 1;
 $last           = count($coursekeys);
-$previouscourse = $coursekeys[0];
+$previouscourse = isset($coursekeys[0]) ? $coursekeys[0] : '';
 $sortorder      = '';
 $previous       = '';
 $actionparam    = '';

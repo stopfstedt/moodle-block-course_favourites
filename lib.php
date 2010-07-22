@@ -52,7 +52,7 @@ function get_user_fav_courses($userid) {
     $accessinfo = get_user_access_sitewide($userid);
 
     // Get courses the user is allowed to see
-    $capcourses = get_user_courses_bycap($userid, 'gradereport/user:view', $accessinfo, false,
+    $capcourses = get_user_courses_bycap($userid, 'moodle/course:viewparticipants', $accessinfo, false,
                                       'c.sortorder ASC', array('visible', 'fullname'));
 
     // Remove courses the user can no longer see because the user does not have the role(s)
@@ -152,7 +152,7 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
       $doanything = empty($CFG->block_course_favourites_musthaverole);
 
       // Get courses the user is allowed to see
-      $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, $doanything,
+      $capcourses = get_user_courses_bycap($userobj->id, 'moodle/course:viewparticipants', $accessinfo, $doanything,
                                            'c.fullname ASC', array('visible', 'fullname'));
 
       $templist   = $favcourses;

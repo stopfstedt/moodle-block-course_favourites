@@ -73,15 +73,22 @@ function get_user_fav_courses($userid) {
             unset($courses[$key2]);
         }
 
+        $context = get_context_instance(CONTEXT_COURSE, $course->id);
+
+        if (!$course->visible) {
+            $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $userid);
+        } else {
+            $showhidden = true;
+        }
+
         // Also check the block setting.  If must have role is set, then user must have a
         // role in the course context to be able to see the course.  If not then they will
         // not be able to see the course even though it is marked as a favourite
         if ($CFG->block_course_favourites_musthaverole) {
-            $context = get_context_instance(CONTEXT_COURSE, $course->id);
             $usrroles = get_user_roles($context, $userid, false);
         }
 
-        if (empty($usrroles)) {
+        if (empty($usrroles) or !$showhidden) {
             unset($courses[$key2]);
         }
 
@@ -148,8 +155,9 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
       $capcourses = get_user_courses_bycap($userobj->id, 'gradereport/user:view', $accessinfo, $doanything,
                                            'c.fullname ASC', array('visible', 'fullname'));
 
-      $templist = $favcourses;
-      $usrroles = true;
+      $templist   = $favcourses;
+      $usrroles   = true;
+      $showhidden = true;
 
       foreach ($capcourses as $course) {
           if ($course->id === SITEID) {
@@ -158,12 +166,22 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
 
           if (!array_key_exists($course->id, $favcourses)) {
 
+              // Check of the user has the capability (in the course context) to view hidden courses
+              $context = get_context_instance(CONTEXT_COURSE, $course->id);
+
+              if (!$course->visible) {
+                  $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $userobj->id);
+              } else {
+                  $showhidden = true;
+              }
+
+              // Check if the user has a role in the course
               if ($CFG->block_course_favourites_musthaverole) {
-                  $context = get_context_instance(CONTEXT_COURSE, $course->id);
                   $usrroles = get_user_roles($context, $userobj->id, false);
               }
 
-              if (!empty($usrroles)) {
+
+              if (!empty($usrroles) and $showhidden) {
                   $index = $course->id;
                   $templist[$index]->id       = $index;
                   $templist[$index]->fullname = $course->fullname;

@@ -40,7 +40,7 @@ class block_course_favourites extends block_list {
         $this->content->icons  = array();
         $this->content->footer = '';
 
-        if (!isloggedin()) {
+        if (!isloggedin() or isguestuser()) {
             return $this->content;
         }
 

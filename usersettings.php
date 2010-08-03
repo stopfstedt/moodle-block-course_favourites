@@ -35,8 +35,6 @@ $sortorder    = optional_param('sortorder', '', PARAM_SEQUENCE);
 
 require_login();
 
-$useajax = false;
-
 $usrpref = get_user_preferences(null, null, $USER->id);
 
 
@@ -69,22 +67,34 @@ if (!$movecourseid && 'move' != $action) {
 }
 
 // Check whether AJAX is needed
-if (ajaxenabled() && $USER->ajax) {     // Browser, user and site-based switches
-    $useajax = true;
+$ajaxformatfile = $CFG->dirroot.'/blocks/course_favourites/ajax.php';
 
-    require_js(array('yui_yahoo',
-                     'yui_dom',
-                     'yui_event',
-                     'yui_dragdrop',
-                     'yui_connection',
-                     'yui_selector',
-                     'yui_element',
-                     'yui_animation',
-                     'ajaxcourse',
-                    ));
+// TODO: stop abusing CFG global here
+$CFG->ajaxcapable = false;           // May be overridden later by ajaxformatfile
+$CFG->ajaxtestedbrowsers = array();  // May be overridden later by ajaxformatfile
+$useajax = false;
 
-    require_js($CFG->wwwroot . '/blocks/course_favourites/coursefav_main.js');
-    require_js($CFG->wwwroot . '/blocks/course_favourites/course_fav.js');
+if (file_exists($ajaxformatfile)) {
+
+    require_once($ajaxformatfile);
+
+    if (ajaxenabled($CFG->ajaxtestedbrowsers) && $USER->ajax) {     // Browser, user and site-based switches
+        $useajax = true;
+
+        require_js(array('yui_yahoo',
+                         'yui_dom',
+                         'yui_event',
+                         'yui_dragdrop',
+                         'yui_connection',
+                         'yui_selector',
+                         'yui_element',
+                         'yui_animation',
+                         'ajaxcourse',
+                        ));
+
+        require_js($CFG->wwwroot . '/blocks/course_favourites/coursefav_main.js');
+        require_js($CFG->wwwroot . '/blocks/course_favourites/course_fav.js');
+    }
 }
 
 $navlinks = array();
@@ -179,7 +189,7 @@ foreach ($allcourses as $coursid => $course) {
         $class = 'class="coursefav usrfav"';
         $style = '';
     } else {
-        $class = 'class="coursefav"';
+        $class = 'class="coursefav nonusrfav"';
         $style = '';
     }
 
@@ -202,7 +212,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/course/view.php?id=' . $course->id .
-          '" ' . $class2 . ' ' . $style . '>'. $course->fullname . '</a>'."\n";
+          '" ' . $class2 . ' ' /*. $style*/ . '>'. $course->fullname . '</a>'."\n";
 
 
     // If action equals 'move', then add movement icons inbetween list

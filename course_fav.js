@@ -39,10 +39,8 @@ YAHOO.DDApp = {
         new YAHOO.util.DDTarget('allclasses');
         
         if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
-	    alert(navigator.userAgent);
             var i = 0;
         } else {
-	    alert(navigator.userAgent);
             var i = 1;
         }
  

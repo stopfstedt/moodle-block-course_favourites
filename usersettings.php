@@ -251,16 +251,17 @@ foreach ($allcourses as $coursid => $course) {
         // TODO use language strings in title and alt attributes
 
         echo '<a href="usersettings.php?courseid='.$courseid.
-             '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
-             '" title="Move">'.
-             '<img class="smallicon" src="'.$CFG->pixpath.'/t/move.gif" alt="Move" /></a>';
+             '&amp;favcourseid='.$course->id.'&amp;action='.$actionparam.'&amp;previous='.
+             $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
+             '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
 
         echo '&nbsp;&nbsp;';
 
         echo '<a href="usersettings.php?courseid='.$courseid.
-             '&amp;favcourseid='.$course->id.'&amp;action='.$actionparam.'&amp;previous='.
-             $previous.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Favourite">'.
-             '<img class="smallicon" src="'.$CFG->pixpath.'/s/yes.gif" alt="Move" /></a>';
+             '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
+             '" title="Move">'.
+             '<img class="smallicon" src="'.$CFG->pixpath.'/t/move.gif" alt="Move" /></a>';
+
     }
 
     echo '</span>'."\n";

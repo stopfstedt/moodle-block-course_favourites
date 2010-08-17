@@ -53,7 +53,7 @@ function get_user_fav_courses($userid) {
 
     // Get courses the user is allowed to see
     $capcourses = get_user_courses_bycap($userid, 'moodle/course:viewparticipants', $accessinfo, false,
-                                      'c.sortorder ASC', array('visible', 'fullname'));
+                                      'c.sortorder ASC', array('visible', 'fullname', 'shortname'));
 
     // Remove courses the user can no longer see because the user does not have the role(s)
     foreach ($courses as $key2 => $course) {
@@ -62,6 +62,7 @@ function get_user_fav_courses($userid) {
 
             if ($course->id == $capcourse->id) {
                 $found = true;
+                $courses[$key2]->shortname = $capcourses[$key]->shortname;
                 break;
             } else {
                 $found = false;

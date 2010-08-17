@@ -1,6 +1,6 @@
 #favlist ul {
     list-style: none;
-    padding: 0;
+    padding: 2em;
     margin: 0;
 }
 
@@ -19,7 +19,9 @@
 }
 
 #favlist_header1 {
-    background-color: #cc;
+    background-color: #CCC;
+    //background-color:#6495ed;
+    padding: 2em;
 }
 
 #block_course_fav {

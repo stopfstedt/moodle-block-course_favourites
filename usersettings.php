@@ -124,7 +124,6 @@ if (has_capability('moodle/course:viewhiddencourses', $context, $USER->id)) {
 
 // Get a list of all courses
 $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
-
 print_simple_box_start('center', '75%', '', '', 'generalbox');
 
 // TODO: Define the language strings for the helptext and then uncomment the lines
@@ -149,12 +148,24 @@ if (0 == strcmp('move', $action)) {
   echo '</div>';
 }
 
-echo '<div id="block_course_fav">'."\n";
+$maindiv = (!empty($allcourses)) ? 'block_course_fav' : 'no_course_block_course_fav';
 
-echo '<div id="favlist_header1" class="favlist_header">'."\n";
-echo '<span id="course-header">'. get_string('coursesheader', 'block_course_favourites') . '</span>'."\n";
-echo '<span id="action-header">'. get_string('actionheader', 'block_course_favourites') . '</span>'."\n";
-echo '</div>';
+echo '<div id="' . $maindiv . '">'."\n";
+
+if (!empty($allcourses)) {
+    echo '<div id="favlist_header1" class="favlist_header">'."\n";
+
+    if (!empty($allcourses)) {
+        echo '<span id="course-header">'. get_string('coursesheader', 'block_course_favourites') . '</span>'."\n";
+        echo '<span id="action-header">'. get_string('actionheader', 'block_course_favourites') . '</span>'."\n";
+    }
+
+    echo '</div>';
+} else {
+    print_simple_box(get_string('nocoursestext', 'block_course_favourites'),
+                     'center', '75%', '', '5', 'generalbox no-courses');
+
+}
 
 echo '<div id="favlist" class="coursefav">'."\n";
 echo '<ul id="allclasses" class="section img-text">'."\n";
@@ -200,7 +211,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     // Printing the sorted list
-    echo '<li id="course-'.$coursid.'" '.$class.'>'."\n";
+    echo '<li title="' . $course->shortname . '" id="course-'.$coursid.'" '.$class.'>'."\n";
 
     // If action equals 'move', then add movement icons inbetween list
     if (0 == strcmp('move', $action)) {
@@ -283,6 +294,12 @@ if ($useajax && $USER->ajax) {
     $blockportal = new coursefav_jsportal();
     $blockportal->print_javascript();
 }
+
+echo "<div class='continuebutton'>";
+print_single_button($CFG->wwwroot . '/course/view.php', array('id' => $courseid),
+                    get_string('back', 'block_course_favourites'));
+echo "</div>";
+
 print_footer();
 
 ?>

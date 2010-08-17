@@ -44,7 +44,7 @@ class block_course_favourites extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $CFG->pixpath . '/i/course.gif" class="icon" alt="' .
+        $icon  = '<img src="' . $CFG->pixpath . '/i/course_favourites.gif" class="icon" alt="' .
                  get_string('coursecategory') . '" />';
 
         // Non-cached - get accessinfo
@@ -62,9 +62,14 @@ class block_course_favourites extends block_list {
 
         // Verify if the user has a role in any course
         if (!empty($CFG->block_course_favourites_musthaverole) && !record_exists_sql($sql)) {
+
             $this->content->items[] = get_string('nocoursesforyou', 'block_course_favourites');
+            $this->content->footer = '<a href="' . $CFG->wwwroot . '/blocks/course_favourites/usersettings.php?' .
+                                     'courseid=' . $COURSE->id . '">' . get_string('settings', 'block_course_favourites') .
+                                     '</a>';
             $this->content->icons[] = '';
         } else {
+
             $noselection = true;
 
             // Verify further whether the user has created their favourites list
@@ -83,7 +88,8 @@ class block_course_favourites extends block_list {
                             $class = 'class="dimmed"';
                         }
 
-                        $this->content->items[] = '<a ' . $class . ' href="' . $CFG->wwwroot . '/course/view.php?id=' .
+                        $this->content->items[] = '<a ' . $class . ' title="' . $crsfav->shortname . '" '.
+                                                  'href="' . $CFG->wwwroot . '/course/view.php?id=' .
                                                   $crsfav->id . '">' . format_string($crsfav->fullname) . '</a>';
                         $this->content->icons[] = $icon;
                     }

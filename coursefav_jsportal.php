@@ -22,6 +22,83 @@
 
 require_once($CFG->libdir . '/ajax/ajaxlib.php');
 
+/**
+ * Used to create view of document to be passed to JavaScript on pageload.
+ * We use this class to pass data from PHP to JavaScript.
+ */
+class jsportal {
+
+    var $currentblocksection = null;
+    var $blocks = array();
+
+
+    /**
+     * Takes id of block and adds it
+     */
+    function block_add($id, $hidden=false){
+        $hidden_binary = 0;
+
+        if ($hidden) {
+            $hidden_binary = 1;
+        }
+        $this->blocks[count($this->blocks)] = array($this->currentblocksection, $id, $hidden_binary);
+    }
+
+
+    /**
+     * Prints the JavaScript code needed to set up AJAX for the course.
+     */
+    function print_javascript($courseid, $return=false) {
+        global $CFG, $USER, $COURSE;
+
+        $blocksoutput = $output = '';
+        for ($i=0; $i<count($this->blocks); $i++) {
+            $blocksoutput .= "['".$this->blocks[$i][0]."',
+                             '".$this->blocks[$i][1]."',
+                             '".$this->blocks[$i][2]."']";
+
+            if ($i != (count($this->blocks) - 1)) {
+                $blocksoutput .= ',';
+            }
+        }
+        $output .= "<script type=\"text/javascript\">\n";
+        $output .= "    main.portal.id = ".$courseid.";\n";
+        $output .= "    main.portal.blocks = new Array(".$blocksoutput.");\n";
+        $output .= "    main.portal.strings['courseformat']='".$COURSE->format."';\n";
+        $output .= "    main.portal.strings['wwwroot']='".$CFG->wwwroot."';\n";
+        $output .= "    main.portal.strings['pixpath']='".$CFG->pixpath."';\n";
+        $output .= "    main.portal.strings['marker']='".get_string('markthistopic', '', '_var_')."';\n";
+        $output .= "    main.portal.strings['marked']='".get_string('markedthistopic', '', '_var_')."';\n";
+        $output .= "    main.portal.numsections = ".$COURSE->numsections.";\n";
+        $output .= "    main.portal.strings['hide']='".get_string('hide')."';\n";
+        $output .= "    main.portal.strings['hidesection']='".get_string('hidesection', '', '_var_')."';\n";
+        $output .= "    main.portal.strings['show']='".get_string('show')."';\n";
+        $output .= "    main.portal.strings['delete']='".get_string('delete')."';\n";
+        $output .= "    main.portal.strings['move']='".get_string('move')."';\n";
+        $output .= "    main.portal.strings['movesection']='".get_string('movesection', '', '_var_')."';\n";
+        $output .= "    main.portal.strings['moveleft']='".get_string('moveleft')."';\n";
+        $output .= "    main.portal.strings['moveright']='".get_string('moveright')."';\n";
+        $output .= "    main.portal.strings['update']='".get_string('update')."';\n";
+        $output .= "    main.portal.strings['groupsnone']='".get_string('groupsnone')."';\n";
+        $output .= "    main.portal.strings['groupsseparate']='".get_string('groupsseparate')."';\n";
+        $output .= "    main.portal.strings['groupsvisible']='".get_string('groupsvisible')."';\n";
+        $output .= "    main.portal.strings['clicktochange']='".get_string('clicktochange')."';\n";
+        $output .= "    main.portal.strings['deletecheck']='".get_string('deletecheck','','_var_')."';\n";
+        $output .= "    main.portal.strings['resource']='".get_string('resource')."';\n";
+        $output .= "    main.portal.strings['activity']='".get_string('activity')."';\n";
+        $output .= "    main.portal.strings['sesskey']='".$USER->sesskey."';\n";
+        $output .= "    onloadobj.load();\n";
+        $output .= "    main.process_blocks();\n";
+        $output .= "</script>";
+        if ($return) {
+            return $output;
+        } else {
+            echo $output;
+        }
+    }
+
+}
+
 class coursefav_jsportal extends jsportal {
     function print_javascript($courseid = 0, $return=false) {
         global $CFG, $USER;

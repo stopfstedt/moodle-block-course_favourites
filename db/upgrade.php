@@ -22,17 +22,17 @@
 
 
 function xmldb_block_course_favourites_upgrade($oldversion = 0) {
-    global $CFG, $THEME, $db;
+    global $CFG, $THEME, $DB;
 
     $result = true;
 
     if ($result && $oldversion < 2010071300) {
         // Look for any duplicate records for a user and let's take the first one created to keep and delete the rest.
-        if ($rs = get_recordset('block_course_favourites', '', '', 'userid ASC, id ASC', 'id, userid')) {
+        if ($rs = $DB->get_recordset('block_course_favourites', null, 'userid ASC, id ASC', 'id, userid')) {
             $curuserid = 0;
             $deleteids = array();
 
-            while ($record = rs_fetch_next_record($rs)) {
+            foreach ($rs as $record) {
                 if ($record->userid != $curuserid) {
                     $curuserid = $record->userid;
                 } else {
@@ -40,13 +40,13 @@ function xmldb_block_course_favourites_upgrade($oldversion = 0) {
                 }
             }
 
-            rs_close($rs);
+            $rs->close();
 
             if (!empty($deleteids)) {
                 if (count($deleteids) > 1) {
-                    $result = $result && delete_records_select('block_course_favourites', 'id IN (' . implode(', ', $deleteids) . ')');
+                    $result = $result && $DB->delete_records_select('block_course_favourites', 'id IN (' . implode(', ', $deleteids) . ')');
                 } else {
-                    $result = $result && delete_records('block_course_favourites', 'id', current($deleteids));
+                    $result = $result && $DB->delete_records('block_course_favourites', array('id' => current($deleteids)));
                 }
             }
         }
@@ -56,17 +56,18 @@ function xmldb_block_course_favourites_upgrade($oldversion = 0) {
         $field = new XMLDBField('blockid');
         $index = new XMLDBIndex('blockid');
 
-        $result = $result && drop_field($table, $field);
-        $result = $result && drop_index($table, $index);
+        $dbman = $DB->get_manager();
+        $result = $result && $dbman->drop_field($table, $field);
+        $result = $result && $dbman->drop_index($table, $index);
 
         // We're also going to modify the 'sortorder' column to be a text field.
         $field = new XMLDBField('sortorder');
         $field->setAttributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, null, null, 'userid');
 
-        $result = $result && change_field_type($table, $field);
-        $result = $result && change_field_precision($table, $field);
-        $result = $result && change_field_notnull($table, $field);
-        $result = $result && change_field_default($table, $field);
+        $result = $result && $dbman->change_field_type($table, $field);
+        $result = $result && $dbman->change_field_precision($table, $field);
+        $result = $result && $dbman->change_field_notnull($table, $field);
+        $result = $result && $dbman->change_field_default($table, $field);
     }
 
     return $result;

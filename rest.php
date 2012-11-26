@@ -40,14 +40,14 @@ $data = new stdClass();
 $data->userid    = $userid;
 $data->sortorder = $sortorder;
 
-if ($id = get_field('block_course_favourites', 'id','userid', $userid)) {
+if ($id = $DB->get_field('block_course_favourites', 'id', array('userid' => $userid))) {
     if (!empty($id)) {
         // update record
         $data->id = $id;
-        update_record('block_course_favourites', $data);
+        $DB->update_record('block_course_favourites', $data);
     }
 } else {
-    insert_record('block_course_favourites', $data);
+    $DB->insert_record('block_course_favourites', $data);
 }
 
 ?>

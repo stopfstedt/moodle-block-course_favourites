@@ -27,14 +27,14 @@
  */
 function get_user_fav_courses($userid) {
 
-    global $CFG;
+    global $CFG, $DB;
 
     $crsfav     = array();
     $courses    = array();
     $coursesori = array();
     $usrroles   = true;
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid);
+    $crsfav = $DB->get_record('block_course_favourites', array('userid' => $userid));
 
     // Explode course list into an array
     if (!empty($crsfav)) {
@@ -98,7 +98,7 @@ function get_user_fav_courses($userid) {
     // Update fav courses if any have been deleted
     if (count($courses) != count($coursesori)) {
         $crsfav->sortorder = implode(',', array_keys($courses));
-        update_record('block_course_favourites', $crsfav);
+        $DB->update_record('block_course_favourites', $crsfav);
     }
 
     return $courses;
@@ -109,6 +109,7 @@ function get_user_fav_courses($userid) {
  * Remove deleted courses
  */
 function remove_deleted_courses($usrcourses = array()) {
+    global $DB;
 
     if (empty($usrcourses)) {
         return $usrcourses;
@@ -125,8 +126,8 @@ function remove_deleted_courses($usrcourses = array()) {
         } else {
             $tempcourses[$key] = new stdClass();
             $tempcourses[$key]->id       = $key;
-            $tempcourses[$key]->fullname = get_field('course', 'fullname', 'id', $courseid);
-            $tempcourses[$key]->visible  = get_field('course', 'visible', 'id', $courseid);
+            $tempcourses[$key]->fullname = $DB->get_field('course', 'fullname', array('id' => $courseid));
+            $tempcourses[$key]->visible  = $DB->get_field('course', 'visible', array('id' => $courseid));
             $tempcourses[$key]->fav      = 1;
         }
     }
@@ -200,15 +201,16 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
  * Add a favourite course to the favourte courses list
  */
 function add_favourite_course($userid, $courseid, $sortorder) {
+    global $DB;
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid);
+    $crsfav = $DB->get_record('block_course_favourites', array('userid' => $userid));
 
     // Insert new record
     if (empty($crsfav)) {
         $crsfav = new stdClass;
         $crsfav->userid    = $userid;
         $crsfav->sortorder = $courseid;
-        insert_record('block_course_favourites', $crsfav);
+        $DB->insert_record('block_course_favourites', $crsfav);
 
         return;
     }
@@ -236,7 +238,7 @@ function add_favourite_course($userid, $courseid, $sortorder) {
         $crsfav->sortorder = implode(',', $templist);
     }
 
-    update_record('block_course_favourites', $crsfav);
+    $DB->update_record('block_course_favourites', $crsfav);
 
 
     return;
@@ -245,9 +247,10 @@ function add_favourite_course($userid, $courseid, $sortorder) {
 /**
  * Remove a favourites course from the favourties list
  */
- function remove_favourite_course($userid, $courseid) {
+function remove_favourite_course($userid, $courseid) {
+    global $DB;
 
-    $crsfav = get_record('block_course_favourites', 'userid', $userid);
+    $crsfav = $DB->get_record('block_course_favourites', array('userid' => $userid));
 
     $templist = explode(',', $crsfav->sortorder);
 
@@ -258,7 +261,7 @@ function add_favourite_course($userid, $courseid, $sortorder) {
         $crsfav->sortorder = implode(',', $templist);
     }
 
-    update_record('block_course_favourites', $crsfav);
+    $DB->update_record('block_course_favourites', $crsfav);
 
     return;
  }
@@ -267,7 +270,9 @@ function add_favourite_course($userid, $courseid, $sortorder) {
  * Code to move a course from one spot to another
  */
 function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
-    $crsfav = get_record('block_course_favourites', 'userid', $userid);
+    global $DB;
+
+    $crsfav = $DB->get_record('block_course_favourites', array('userid' => $userid));
 
     $templist = explode(',', $crsfav->sortorder);
     $sortorder = trim($sortorder, ',');
@@ -302,7 +307,7 @@ function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
 
                 // Update the sort order with the new order
                 $crsfav->sortorder = $coursetomove . ',' .$crsfav->sortorder;
-                update_record('block_course_favourites', $crsfav);
+                $DB->update_record('block_course_favourites', $crsfav);
                 return;
 
             } elseif (0 == strcmp('last', $courseid)) {
@@ -313,7 +318,7 @@ function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
                 // Update the sort order with the removed course
                 $crsfav->sortorder = implode(',', $templist);
                 $crsfav->sortorder =  $crsfav->sortorder . ',' . $coursetomove;
-                update_record('block_course_favourites', $crsfav);
+                $DB->update_record('block_course_favourites', $crsfav);
                 return;
             }
 
@@ -336,7 +341,7 @@ function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
             }
         }
 
-        update_record('block_course_favourites', $crsfav);
+        $DB->update_record('block_course_favourites', $crsfav);
     }
  }
 

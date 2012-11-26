@@ -24,12 +24,11 @@ require_once($CFG->dirroot . '/blocks/course_favourites/lib.php');
 
 class block_course_favourites extends block_list {
     function init() {
-        $this->title   = get_string('blockname', 'block_course_favourites');
-        $this->version = 2010071300;
+        $this->title   = get_string('course_favourites', 'block_course_favourites');
     }
 
     function get_content() {
-        global $CFG, $USER, $COURSE;
+        global $CFG, $DB, $USER, $COURSE;
 
         if ($this->content !== NULL) {
           return $this->content;
@@ -73,7 +72,7 @@ class block_course_favourites extends block_list {
             $noselection = true;
 
             // Verify further whether the user has created their favourites list
-            if (($sortorder = get_field('block_course_favourites', 'sortorder', 'userid', $USER->id))) {
+            if (($sortorder = $DB->get_field('block_course_favourites', 'sortorder', array('userid' => $USER->id)))) {
                 $noselection = false;
 
                 // Print list of courses work done here.....

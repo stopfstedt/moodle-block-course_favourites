@@ -100,7 +100,7 @@ if (file_exists($ajaxformatfile)) {
 $navlinks = array();
 
 if ($courseid && $courseid != SITEID) {
-    $shortname = get_field('course', 'shortname', 'id', $courseid);
+    $shortname = $DB->get_field('course', 'shortname', array('id' => $courseid));
     $navlinks[] = array(
         'name' => format_string($shortname),
         'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,

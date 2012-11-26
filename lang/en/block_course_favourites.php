@@ -2,7 +2,7 @@
 
 $string['actionheader'] = 'Action';
 $string['areyousuremove'] = 'Are you sure you want to move $a';
-$string['blockname'] = 'Favourite Courses';
+$string['pluginname'] = 'Favourite Courses';
 $string['breadcrumb'] = 'Select Favorite Courses';
 $string['cancel'] = 'Cancel';
 $string['course_favourites'] = 'Favourite Courses';

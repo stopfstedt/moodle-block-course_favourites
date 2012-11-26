@@ -1,6 +1,6 @@
 <?php
 
-$string['blockname'] = 'Favorite Courses';
+$string['pluginname'] = 'Favorite Courses';
 $string['breadcrumb'] = 'Favorite Courses user settings';
 $string['course_favourites'] = 'Favorite Courses';
 $string['header'] = 'Favorite Courses';

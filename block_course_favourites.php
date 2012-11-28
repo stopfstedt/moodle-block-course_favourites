@@ -28,7 +28,7 @@ class block_course_favourites extends block_list {
     }
 
     function get_content() {
-        global $CFG, $DB, $USER, $COURSE;
+        global $CFG, $DB, $USER, $COURSE, $OUTPUT;
 
         if ($this->content !== NULL) {
           return $this->content;
@@ -43,7 +43,7 @@ class block_course_favourites extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $CFG->pixpath . '/i/course_favourites.gif" class="icon" alt="' .
+        $icon  = '<img src="' . $OUTPUT->pix_url('course_favourites', 'block_course_favourites') . '" class="icon" alt="' .
                  get_string('coursecategory') . '" />';
 
         // Non-cached - get accessinfo
@@ -60,7 +60,7 @@ class block_course_favourites extends block_list {
                 AND ra.userid = {$USER->id}";
 
         // Verify if the user has a role in any course
-        if (!empty($CFG->block_course_favourites_musthaverole) && !record_exists_sql($sql)) {
+        if (!empty($CFG->block_course_favourites_musthaverole) && !$DB->record_exists_sql($sql)) {
 
             $this->content->items[] = get_string('nocoursesforyou', 'block_course_favourites');
             $this->content->footer = '<a href="' . $CFG->wwwroot . '/blocks/course_favourites/usersettings.php?' .

@@ -121,7 +121,7 @@ function remove_deleted_courses($usrcourses = array()) {
 
     // Verify whether the any of the favourite courses still exist
     foreach ($tempcourses as $key => $courseid) {
-        if (empty($courseid) || !record_exists('course', 'id', $courseid)) {
+        if (empty($courseid) || !$DB->record_exists('course', array('id' => $courseid))) {
             unset($tempcourses[$key]);
         } else {
             $tempcourses[$key] = new stdClass();

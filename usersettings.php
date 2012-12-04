@@ -110,7 +110,14 @@ if ($courseid && $courseid != SITEID) {
 
 $navlinks[] = array('name' => get_string('breadcrumb', 'block_course_favourites'), 'link' => '', 'type' => 'misc');
 $navigation = build_navigation($navlinks);
-print_header_simple(get_string('header', 'block_course_favourites'), '', $navigation);
+
+$site = get_site();
+$PAGE->set_title($site->shortname . ': ' . get_string('block', 'moodle') . ': '
+                 . get_string('pluginname', 'block_course_favourites') . ': '
+                 .get_string('settings', 'block_course_favourites'));
+$PAGE->set_heading($site->fullname);
+
+echo $OUTPUT->header();
 
 // Check if this user has configured this block instance before
 $favcourses = get_user_fav_courses($USER->id);
@@ -302,6 +309,6 @@ print_single_button($CFG->wwwroot . '/course/view.php', array('id' => $courseid)
                     get_string('back', 'block_course_favourites'));
 echo "</div>";
 
-print_footer();
+echo $OUTPUT->footer();
 
 ?>

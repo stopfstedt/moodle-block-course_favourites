@@ -89,8 +89,7 @@ class block_course_favourites extends block_list {
 
                         $this->content->items[] = '<a ' . $class . ' title="' . $crsfav->shortname . '" '.
                                                   'href="' . $CFG->wwwroot . '/course/view.php?id=' .
-                                                  $crsfav->id . '">' . format_string($crsfav->fullname) . '</a>';
-                        $this->content->icons[] = $icon;
+                                                  $crsfav->id . '">' . $icon . format_string($crsfav->fullname) . '</a>';
                     }
                 }
 

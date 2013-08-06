@@ -148,6 +148,7 @@ if ($useajax) {
 // Print 'are you sure' link if move has been initiated
 if (0 == strcmp('move', $action)) {
   echo '<div align="center">';
+  //print_r($allcourses[$movecourseid]->fullname);
   echo get_string('areyousuremove', 'block_course_favourites', $allcourses[$movecourseid]->fullname) .
        '&nbsp;&nbsp;( <a href="usersettings.php?action=cancel&amp;sesskey='.$USER->sesskey.
        '&amp;courseid=' . $courseid . '">' . get_string('cancel', 'block_course_favourites') .
@@ -277,10 +278,13 @@ foreach ($allcourses as $coursid => $course) {
 
         echo '&nbsp;&nbsp;';
 
-        echo '<a href="usersettings.php?courseid='.$courseid.
-             '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
-             '" title="Move">'.
-             '<img class="smallicon" src="'.$OUTPUT->pix_url('t/move').'" alt="Move" /></a>';
+
+	if ($course->fav){
+            echo '<a href="usersettings.php?courseid='.$courseid.
+                 '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
+                 '" title="Move">'.
+                 '<img class="smallicon" src="'.$OUTPUT->pix_url('t/move').'" alt="Move" /></a>';
+	}
 
     }
 

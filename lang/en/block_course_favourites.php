@@ -3,14 +3,16 @@
 $string['actionheader'] = 'Action';
 $string['areyousuremove'] = 'Are you sure you want to move {$a}';
 $string['pluginname'] = 'Favourite Courses';
-$string['breadcrumb'] = 'Select Favorite Courses';
+$string['breadcrumb'] = 'Select Favourite Courses';
 $string['cancel'] = 'Cancel';
 $string['course_favourites'] = 'Favourite Courses';
+$string['course_favourites:addinstance'] = 'Add a new Favourite Courses block';
+$string['course_favourites:myaddinstance'] = 'Add a new Favourite Courses block to the My Moodle page';
 $string['coursesforyou'] = 'Click the link to select courses to display here';
 $string['coursesheader'] = 'Courses';
 $string['header'] = 'Favourite Courses';
 $string['musthaverole'] = 'User must have a role in the course';
-$string['musthaverole_desc'] = 'Check this if the user must have a role to view a course in the Favorite Courses block';
+$string['musthaverole_desc'] = 'Check this if the user must have a role to view a course in the Favourite Courses block';
 $string['nocoursesforyou'] = 'No favourite courses selected';
 $string['noselecedcoursesforyou'] = 'No favourite courses selected';
 $string['settings'] = 'Select courses';
@@ -27,5 +29,3 @@ $string['helptextnoajax'] = 'To add a course to your Favourite Courses list, cli
 $string['nocoursestext'] =  'You will be able to select courses to appear in the Favourite Courses block once you are '.
                             'enrolled in some courses';
 $string['back'] = 'Click here to return to your course';
-
-?>

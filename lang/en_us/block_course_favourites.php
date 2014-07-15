@@ -1,9 +1,12 @@
 <?php
 
 $string['pluginname'] = 'Favorite Courses';
-$string['breadcrumb'] = 'Favorite Courses user settings';
+$string['breadcrumb'] = 'Select Favorite Courses';
 $string['course_favourites'] = 'Favorite Courses';
+$string['course_favourites:addinstance'] = 'Add a new Favorite Courses block';
+$string['course_favourites:myaddinstance'] = 'Add a new Favorite Courses block to the My Moodle page';
 $string['header'] = 'Favorite Courses';
+$string['musthaverole_desc'] = 'Check this if the user must have a role to view a course in the Favorite Courses block';
 $string['noselecedcoursesforyou'] = 'No favorite courses selected';
 $string['helptextajax'] = 'To add a course to your Favorite Courses list, click the thumbs-up icon. '.
                           'Selected courses will appear at the top and in yellow. To re-order the list, '.
@@ -18,6 +21,3 @@ $string['helptextnoajax'] = 'To add a course to your Favorite Courses list, clic
 $string['nocoursesforyou'] = 'No favorite courses selected';
 $string['nocoursestext'] =  'You will be able to select courses to appear in the Favorite Courses block once you are '.
                             'enrolled in some courses';
-
-
-?>

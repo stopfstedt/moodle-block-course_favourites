@@ -49,11 +49,18 @@ function get_user_fav_courses($userid) {
 
     // Remove coures if the user doesn't have the proper role(s) for
     // Non-cached - get accessinfo
-    $accessinfo = get_user_access_sitewide($userid);
+    //$accessinfo = get_user_access_sitewide($userid);
 
     // Get courses the user is allowed to see
-    $capcourses = get_user_courses_bycap($userid, 'moodle/course:viewparticipants', $accessinfo, false,
-                                      'c.sortorder ASC', array('visible', 'fullname', 'shortname'));
+    //    $capcourses = get_user_courses_bycap($userid, 'moodle/course:viewparticipants', $accessinfo, false,
+    //                                  'c.sortorder ASC', array('visible', 'fullname', 'shortname'));
+    $capcourses = enrol_get_users_courses($userid, true, array('visible', 'fullname', 'shortname'), 'c.sortorder ASC');
+    foreach ($courses as $id=>$course) {
+        $context = context_course::instance($id);
+        if (!has_capability('moodle/course:viewparticipants', $context, $userid)) {
+            unset($courses[$id]);
+        }
+    }
 
     // Remove courses the user can no longer see because the user does not have the role(s)
     foreach ($courses as $key2 => $course) {
@@ -74,7 +81,7 @@ function get_user_fav_courses($userid) {
             unset($courses[$key2]);
         }
 
-        $context = get_context_instance(CONTEXT_COURSE, $course->id);
+        $context = context_course::instance($course->id);
 
         if (!$course->visible) {
             $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $userid);
@@ -85,7 +92,7 @@ function get_user_fav_courses($userid) {
         // Also check the block setting.  If must have role is set, then user must have a
         // role in the course context to be able to see the course.  If not then they will
         // not be able to see the course even though it is marked as a favourite
-        if ($CFG->block_course_favourites_musthaverole) {
+        if (isset($CFG->block_course_favourites_musthaverole) && $CFG->block_course_favourites_musthaverole) {
             $usrroles = get_user_roles($context, $userid, false);
         }
 
@@ -145,17 +152,25 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
     global $CFG;
 
       // Non-cached - get accessinfo
-      if (isset($userobj->access)) {
-          $accessinfo = $userobj->access;
-      } else {
-          $accessinfo = get_user_access_sitewide($userobj->id);
-      }
+      //if (isset($userobj->access)) {
+      //   $accessinfo = $userobj->access;
+      //} else {
+      //    $accessinfo = get_user_access_sitewide($userobj->id);
+      //}
 
-      $doanything = empty($CFG->block_course_favourites_musthaverole);
+      //$doanything = empty($CFG->block_course_favourites_musthaverole);
 
       // Get courses the user is allowed to see
-      $capcourses = get_user_courses_bycap($userobj->id, 'moodle/course:viewparticipants', $accessinfo, $doanything,
-                                           'c.fullname ASC', array('visible', 'fullname'));
+      //$capcourses = get_user_courses_bycap($userobj->id, 'moodle/course:viewparticipants', $accessinfo, $doanything,
+      //                                     'c.fullname ASC', array('visible', 'fullname'));
+      $capcourses = enrol_get_users_courses($userobj->id, true, array('visible', 'fullname'),
+					  'c.fullname ASC');
+      foreach ($capcourses as $id=>$course) {
+        $context = context_course::instance($id);
+        if (!has_capability('moodle/course:viewparticipants', $context, $userobj->id)) {
+	  unset($courses[$id]);
+        }
+      }
 
       $templist   = $favcourses;
       $usrroles   = true;
@@ -169,7 +184,7 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
           if (!array_key_exists($course->id, $favcourses)) {
 
               // Check of the user has the capability (in the course context) to view hidden courses
-              $context = get_context_instance(CONTEXT_COURSE, $course->id);
+              $context = context_course::instance($course->id);
 
               if (!$course->visible) {
                   $showhidden = has_capability('moodle/course:viewhiddencourses', $context, $userobj->id);
@@ -178,15 +193,17 @@ function get_complete_course_list($userobj, $showall = 0, $favcourses = array())
               }
 
               // Check if the user has a role in the course
-              if ($CFG->block_course_favourites_musthaverole) {
+              if (isset($CFG->block_course_favourites_musthaverole) && $CFG->block_course_favourites_musthaverole) {
                   $usrroles = get_user_roles($context, $userobj->id, false);
               }
 
 
               if (!empty($usrroles) and $showhidden) {
                   $index = $course->id;
+		  $templist[$index] = new stdClass();
                   $templist[$index]->id       = $index;
                   $templist[$index]->fullname = $course->fullname;
+                  $templist[$index]->shortname = $course->shortname;
                   $templist[$index]->visible  = $course->visible;
                   $templist[$index]->fav      = 0;
               }
@@ -344,5 +361,3 @@ function move_favourite_course($userid, $coursetomove, $courseid, $sortorder) {
         $DB->update_record('block_course_favourites', $crsfav);
     }
  }
-
-?>

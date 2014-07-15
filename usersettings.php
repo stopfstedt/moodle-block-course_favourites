@@ -33,7 +33,14 @@ $previous     = optional_param('previous', 'first', PARAM_ALPHANUM);
 $movecourseid = optional_param('movecourseid', 0, PARAM_INT);
 $sortorder    = optional_param('sortorder', '', PARAM_SEQUENCE);
 
-require_login();
+$PAGE->set_url('/blocks/course_favourites/usersettings.php', array('courseid'=>$courseid));
+$PAGE->set_pagelayout('standard');
+
+if (!$course = $DB->get_record('course', array('id'=>$courseid))) {
+    print_error("That's an invalid course id");
+}
+
+require_login($course);
 
 $usrpref = get_user_preferences(null, null, $USER->id);
 
@@ -78,7 +85,7 @@ if (file_exists($ajaxformatfile)) {
 
     require_once($ajaxformatfile);
 
-    if (ajaxenabled($CFG->ajaxtestedbrowsers) && $USER->ajax) {     // Browser, user and site-based switches
+    if (ajaxenabled($CFG->ajaxtestedbrowsers) && isset($USER->ajax) && $USER->ajax) {     // Browser, user and site-based switches
         $useajax = true;
 
         require_js(array('yui_yahoo',
@@ -97,24 +104,17 @@ if (file_exists($ajaxformatfile)) {
     }
 }
 
-$navlinks = array();
-
 if ($courseid && $courseid != SITEID) {
     $shortname = $DB->get_field('course', 'shortname', array('id' => $courseid));
-    $navlinks[] = array(
-        'name' => format_string($shortname),
-        'link' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
-        'type' => 'link'
-    );
+    $PAGE->navbar->add(format_string($shortname), new moodle_url('/course/view.php', array('id'=>$courseid)));
 }
 
-$navlinks[] = array('name' => get_string('breadcrumb', 'block_course_favourites'), 'link' => '', 'type' => 'misc');
-$navigation = build_navigation($navlinks);
+$PAGE->navbar->add(get_string('breadcrumb', 'block_course_favourites'));
 
 $site = get_site();
 $PAGE->set_title($site->shortname . ': ' . get_string('block', 'moodle') . ': '
                  . get_string('pluginname', 'block_course_favourites') . ': '
-                 .get_string('settings', 'block_course_favourites'));
+                 . get_string('settings', 'block_course_favourites'));
 $PAGE->set_heading($site->fullname);
 
 echo $OUTPUT->header();
@@ -124,23 +124,20 @@ $favcourses = get_user_fav_courses($USER->id);
 
 // Check for capability for hidden courses
 $showhidden = 0;
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 if (has_capability('moodle/course:viewhiddencourses', $context, $USER->id)) {
     $showhidden = 1;
 }
 
 // Get a list of all courses
 $allcourses = get_complete_course_list($USER, $showhidden, $favcourses);
-print_simple_box_start('center', '75%', '', '', 'generalbox');
+//print_simple_box_start('center', '75%', '', '', 'generalbox');
+echo $OUTPUT->box_start('generalbox');
 
-// TODO: Define the language strings for the helptext and then uncomment the lines
-//       below (maybe choose an appropriate class, too).
 if ($useajax) {
-    print_simple_box(get_string('helptextajax', 'block_course_favourites'),
-                     'center', '75%', '', '5', 'generalbox ajax-help');
+    echo $OUTPUT->box(get_string('helptextajax', 'block_course_favourites'), 'generalbox ajax-help');
 } else {
-    print_simple_box(get_string('helptextnoajax', 'block_course_favourites'),
-                     'center', '75%', '', '5', 'generalbox non-ajax-help');
+    echo $OUTPUT->box(get_string('helptextnoajax', 'block_course_favourites'), 'generalbox ajax-help');
 }
 
 // print output
@@ -170,9 +167,7 @@ if (!empty($allcourses)) {
 
     echo '</div>';
 } else {
-    print_simple_box(get_string('nocoursestext', 'block_course_favourites'),
-                     'center', '75%', '', '5', 'generalbox no-courses');
-
+    echo $OUTPUT->box(get_string('nocoursestext', 'block_course_favourites'), 'generalbox no-courses');
 }
 
 echo '<div id="favlist" class="coursefav">'."\n";
@@ -188,7 +183,7 @@ $sortorder      = '';
 $previous       = '';
 $actionparam    = '';
 
-foreach ($allcourses as $coursid => $course) {
+foreach ($allcourses as $cid => $course) {
 
     // The batch of code below keeps track of the first or previous course id
     // This is needed to determine exactly where an course is marked favourite
@@ -219,7 +214,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     // Printing the sorted list
-    echo '<li title="' . $course->shortname . '" id="course-'.$coursid.'" '.$class.'>'."\n";
+    echo '<li title="' . $course->shortname . '" id="course-'.$cid.'" '.$class.'>'."\n";
 
     // If action equals 'move', then add movement icons inbetween list
     if (0 == strcmp('move', $action)) {
@@ -230,7 +225,7 @@ foreach ($allcourses as $coursid => $course) {
         // TODO use language strings in title and alt attributes
     }
 
-    echo '<a id="course-' . $coursid . '-link" href="' .$CFG->wwwroot.'/course/view.php?id=' . $course->id .
+    echo '<a id="course-' . $cid . '-link" href="' .$CFG->wwwroot.'/course/view.php?id=' . $course->id .
           '" ' . $class2 . ' ' /*. $style*/ . '>'. $course->fullname . '</a>'."\n";
 
 
@@ -251,7 +246,7 @@ foreach ($allcourses as $coursid => $course) {
     }
 
     // Print button for non AJAX version
-    if (!$useajax || !$USER->ajax) {
+    if (!$useajax || !(isset($USER->ajax) && $USER->ajax)) {
         // Add the previous course in the list as a parameter because we need to know
         // where in the list to insert the course
         if (array_key_exists($previouscourse, $allcourses)) {
@@ -300,19 +295,16 @@ echo '</div>'."\n";
 
 echo '</div>'."\n";
 
-print_simple_box_end();
+echo $OUTPUT->box_end();
 
 // check for $useajax again //  $USER->ajax
-if ($useajax && $USER->ajax) {
+if ($useajax && isset($USER->ajax) && $USER->ajax) {
     $blockportal = new coursefav_jsportal();
     $blockportal->print_javascript();
 }
 
 echo "<div class='continuebutton'>";
-print_single_button($CFG->wwwroot . '/course/view.php', array('id' => $courseid),
-                    get_string('back', 'block_course_favourites'));
+echo $OUTPUT->single_button($CFG->wwwroot . '/course/view.php?id='.$courseid, get_string('back', 'block_course_favourites'));
 echo "</div>";
 
 echo $OUTPUT->footer();
-
-?>

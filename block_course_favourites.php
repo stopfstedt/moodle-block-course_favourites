@@ -115,6 +115,24 @@ class block_course_favourites extends block_list {
 
         return $this->content;
     }
+
+    function has_config() {
+      return true;
+    }
+
+    /**
+     * Which page types this block may appear on.
+     *
+     * @return array page-type prefix => true/false.
+     */
+    function applicable_formats() {
+      return array('all' => true);
+    }
+
+
+    public function instance_allow_multiple() {
+      return false;
+    }
 }
 
 ?>

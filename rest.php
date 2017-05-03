@@ -50,5 +50,3 @@ if ($id = $DB->get_field('block_course_favourites', 'id', array('userid' => $use
 } else {
     $DB->insert_record('block_course_favourites', $data);
 }
-
-?>

@@ -135,5 +135,3 @@ class block_course_favourites extends block_list {
       return false;
     }
 }
-
-?>

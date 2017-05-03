@@ -129,5 +129,3 @@ class coursefav_jsportal extends jsportal {
         }
     }
 }
-
-?>

@@ -30,7 +30,7 @@ $sortorder = required_param('sortorder', PARAM_SEQUENCE);
 
 // Check for permissions .... ?
 
-if (!ajaxenabled() || empty($USER->ajax)) {
+if (empty($USER->ajax)) {
     error_log('Course AJAX not allowed');
     die;
 }

@@ -86,7 +86,7 @@ if (file_exists($ajaxformatfile)) {
 
     require_once($ajaxformatfile);
 
-    if (ajaxenabled($CFG->ajaxtestedbrowsers) && isset($USER->ajax) && $USER->ajax) {     // Browser, user and site-based switches
+    if (isset($USER->ajax) && $USER->ajax) {     // Browser, user and site-based switches
         $useajax = true;
 
         require_js(array('yui_yahoo',

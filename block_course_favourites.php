@@ -44,8 +44,7 @@ class block_course_favourites extends block_list {
             return $this->content;
         }
 
-        $icon  = '<img src="' . $OUTPUT->pix_url('course_favourites', 'block_course_favourites') . '" class="icon" alt="' .
-                 get_string('coursecategory') . '" />';
+        $icon  = $OUTPUT->pix_icon('course_favourites', get_string('coursecategory'), 'block_course_favourites');
 
         // Non-cached - get accessinfo
         if (isset($USER->access)) {

@@ -222,7 +222,7 @@ foreach ($allcourses as $cid => $course) {
         echo '<a href="usersettings.php?courseid='.$courseid.
              '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous='.
              $previouscourse.'&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
-             '<img class="smallicon" src="'.$OUTPUT->pix_url('movehere').'" alt="Move Here" /></a><br />';
+             '<img class="smallicon" src="'.$OUTPUT->image_url('movehere').'" alt="Move Here" /></a><br />';
         // TODO use language strings in title and alt attributes
     }
 
@@ -236,7 +236,7 @@ foreach ($allcourses as $cid => $course) {
         echo '<br /><a href="usersettings.php?courseid='.$courseid.
              '&amp;favcourseid='.$course->id.'&amp;action='.$action.'&amp;movecourseid='.$movecourseid.'&amp;previous=last'.
              '&amp;sortorder='.$sortorder.'&amp;sesskey='.$USER->sesskey.'" title="Move Here">'.
-             '<img class="smallicon" src="'.$OUTPUT->pix_url('movehere').'" alt="Move Here" /></a>';
+             '<img class="smallicon" src="'.$OUTPUT->image_url('movehere').'" alt="Move Here" /></a>';
     }
 
     // Do more CSS fun if this is the last element and we're moving
@@ -259,10 +259,10 @@ foreach ($allcourses as $cid => $course) {
         // Check if the course is already a favourite and add the appropriate parameter to denote that
         if ($course->fav) {
             $actionparam = 'remove';
-            $favicon_url = $OUTPUT->pix_url('s/yes');
+            $favicon_url = $OUTPUT->image_url('s/yes');
         } else {
             $actionparam = 'add';
-            $favicon_url = $OUTPUT->pix_url('s/no');
+            $favicon_url = $OUTPUT->image_url('s/no');
         }
 
         // TODO use language strings in title and alt attributes
@@ -279,7 +279,7 @@ foreach ($allcourses as $cid => $course) {
             echo '<a href="usersettings.php?courseid='.$courseid.
                  '&amp;movecourseid='.$course->id.'&amp;action=move&amp;sesskey='.$USER->sesskey.
                  '" title="Move">'.
-                 '<img class="smallicon" src="'.$OUTPUT->pix_url('t/move').'" alt="Move" /></a>';
+                 '<img class="smallicon" src="'.$OUTPUT->image_url('t/move').'" alt="Move" /></a>';
 	}
 
     }

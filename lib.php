@@ -48,13 +48,6 @@ function get_user_fav_courses($userid) {
     // Determine which courses have been deleted
     $courses = remove_deleted_courses($coursesori, $userid);
 
-    // Remove coures if the user doesn't have the proper role(s) for
-    // Non-cached - get accessinfo
-    //$accessinfo = get_user_access_sitewide($userid);
-
-    // Get courses the user is allowed to see
-    //    $capcourses = get_user_courses_bycap($userid, 'moodle/course:viewparticipants', $accessinfo, false,
-    //                                  'c.sortorder ASC', array('visible', 'fullname', 'shortname'));
     $capcourses = enrol_get_users_courses($userid, true, array('visible', 'fullname', 'shortname'), 'c.sortorder ASC');
     foreach ($courses as $id=>$course) {
         $context = context_course::instance($id);
@@ -151,19 +144,6 @@ function remove_deleted_courses($usrcourses = array()) {
  */
 function get_complete_course_list($userobj, $showall = 0, $favcourses = array()) {
     global $CFG;
-
-      // Non-cached - get accessinfo
-      //if (isset($userobj->access)) {
-      //   $accessinfo = $userobj->access;
-      //} else {
-      //    $accessinfo = get_user_access_sitewide($userobj->id);
-      //}
-
-      //$doanything = empty($CFG->block_course_favourites_musthaverole);
-
-      // Get courses the user is allowed to see
-      //$capcourses = get_user_courses_bycap($userobj->id, 'moodle/course:viewparticipants', $accessinfo, $doanything,
-      //                                     'c.fullname ASC', array('visible', 'fullname'));
       $capcourses = enrol_get_users_courses($userobj->id, true, array('visible', 'fullname'),
 					  'c.fullname ASC');
       foreach ($capcourses as $id=>$course) {

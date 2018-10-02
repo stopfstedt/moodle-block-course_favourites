@@ -46,13 +46,6 @@ class block_course_favourites extends block_list {
 
         $icon  = $OUTPUT->pix_icon('course_favourites', get_string('coursecategory'), 'block_course_favourites');
 
-        // Non-cached - get accessinfo
-        if (isset($USER->access)) {
-            $accessinfo = $USER->access;
-        } else {
-            $accessinfo = get_user_access_sitewide($USER->id);
-        }
-
         $sql = "SELECT ra.id
                 FROM {$CFG->prefix}role_assignments ra
                 INNER JOIN {$CFG->prefix}context ctx ON ra.contextid = ctx.id
